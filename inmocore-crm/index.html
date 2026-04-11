@@ -11,9 +11,9 @@
         
         body { font-family: 'Inter', sans-serif; }
         
-        /* Imagen de fondo principal con overlay oscuro */
+        /* CORRECCIÓN: Ruta de imagen apunta a la raíz donde está el HTML */
         .hero-bg {
-            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('/img/img10.jpg');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('img10.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -21,7 +21,7 @@
 
         .input-premium:focus {
             outline: none;
-            border-color: #3b82f6; /* Blue 500 alineado al Admin */
+            border-color: #3b82f6; 
             box-shadow: 0 0 0 1px #3b82f6;
         }
         
@@ -98,20 +98,15 @@
                                 </div>
 
                                 <div class="pt-2">
-                                    <label class="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wide">Interés Principal</label>
-                                    <div class="space-y-2">
-                                        <label class="cursor-pointer block relative">
-                                            <input type="radio" name="emprendimiento" value="Edificio KAIZEN" class="peer sr-only" required>
-                                            <div class="w-full bg-slate-800/40 border border-slate-600 text-slate-300 rounded-lg px-4 py-3 transition-all hover:bg-slate-700/50 peer-checked:bg-blue-900/60 peer-checked:border-blue-400 peer-checked:text-white font-medium text-sm">
-                                                Departamentos (Edificio KAIZEN)
-                                            </div>
-                                        </label>
-                                        <label class="cursor-pointer block relative">
-                                            <input type="radio" name="emprendimiento" value="Lotes Manantiales II" class="peer sr-only">
-                                            <div class="w-full bg-slate-800/40 border border-slate-600 text-slate-300 rounded-lg px-4 py-3 transition-all hover:bg-slate-700/50 peer-checked:bg-blue-900/60 peer-checked:border-blue-400 peer-checked:text-white font-medium text-sm">
-                                                Lotes y Terrenos (Zona Sur)
-                                            </div>
-                                        </label>
+                                    <label for="emprendimiento" class="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wide">Interés Principal</label>
+                                    <div class="relative">
+                                        <select id="emprendimiento" name="emprendimiento" required
+                                                class="input-premium w-full bg-slate-800/60 border border-slate-600 text-white rounded-lg px-4 py-3 transition-colors appearance-none cursor-pointer">
+                                            <option value="" disabled selected>Sincronizando catálogo...</option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                                            <i class="fas fa-chevron-down text-xs"></i>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -153,7 +148,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div class="bg-slate-50 rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="h-64 overflow-hidden relative">
-                        <img src="/img/img11.jpg" alt="Edificio KAIZEN" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="img11.jpg" alt="Edificio KAIZEN" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Posesión Inmediata</div>
                     </div>
                     <div class="p-8">
@@ -166,7 +161,7 @@
 
                 <div class="bg-slate-50 rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
                     <div class="h-64 overflow-hidden relative">
-                        <img src="/img/img12.jpg" alt="Lotes Manantiales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="img12.jpg" alt="Lotes Manantiales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Preventa</div>
                     </div>
                     <div class="p-8">
@@ -185,7 +180,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="relative">
                     <div class="absolute inset-0 bg-blue-600 rounded-2xl transform translate-x-4 translate-y-4 opacity-50"></div>
-                    <img src="/img/img13.jpg" alt="Asesoría de Negocios" class="relative rounded-2xl shadow-2xl w-full h-auto object-cover z-10 border border-slate-700">
+                    <img src="img13.jpg" alt="Asesoría de Negocios" class="relative rounded-2xl shadow-2xl w-full h-auto object-cover z-10 border border-slate-700">
                 </div>
                 
                 <div>
@@ -240,27 +235,48 @@
 
     <script>
         const CONFIG = {
-            localStorageKey: "crm_saas_inbox_v1" // Llave maestra conectada a crmadmin.html
+            localStorageKey: "crm_saas_inbox_v1" 
         };
+
+        // NUEVO: Cargar el catálogo desde D1 al iniciar la página
+        async function cargarCatalogoPropiedades() {
+            const selectElement = document.getElementById('emprendimiento');
+            try {
+                const response = await fetch('/api/propiedades');
+                if (!response.ok) throw new Error('Error en API');
+                
+                const propiedades = await response.json();
+                
+                if (propiedades.length === 0) {
+                    selectElement.innerHTML = '<option value="" disabled selected>No hay proyectos en catálogo</option>';
+                    return;
+                }
+
+                // Limpiar y llenar con los datos reales
+                selectElement.innerHTML = '<option value="" disabled selected>-- Elige un Proyecto --</option>';
+                propiedades.forEach(prop => {
+                    selectElement.innerHTML += `<option value="${prop.nombre}">${prop.nombre}</option>`;
+                });
+                
+            } catch (error) {
+                console.error("Error al cargar propiedades:", error);
+                selectElement.innerHTML = '<option value="Consulta General">Consulta General</option>';
+            }
+        }
+
+        // Ejecutar carga dinámica
+        window.addEventListener('DOMContentLoaded', cargarCatalogoPropiedades);
 
         document.getElementById('leadForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Recopilar datos
             const nombre = document.getElementById('nombre').value;
             const email = document.getElementById('email').value;
             const telefono = document.getElementById('telefono').value;
             
-            const emprendimientoRadios = document.getElementsByName('emprendimiento');
-            let emprendimientoSeleccionado = 'Consulta General'; // Valor por defecto
-            for (let i = 0; i < emprendimientoRadios.length; i++) {
-                if (emprendimientoRadios[i].checked) {
-                    emprendimientoSeleccionado = emprendimientoRadios[i].value;
-                    break;
-                }
-            }
+            // Tomar el valor del <select> dinámico
+            const emprendimientoSeleccionado = document.getElementById('emprendimiento').value;
 
-            // Crear el Lead temporal
             const nuevoLead = {
                 id: 'web_' + Date.now(), 
                 nombre: nombre,
@@ -270,22 +286,18 @@
                 fecha: new Date().toLocaleString()
             };
 
-            // Guardar en Bandeja Web Temporal (Interconecta con Admin)
             let leadsInbox = JSON.parse(localStorage.getItem(CONFIG.localStorageKey)) || [];
             leadsInbox.push(nuevoLead);
             localStorage.setItem(CONFIG.localStorageKey, JSON.stringify(leadsInbox));
             
-            // Disparar evento para que otras pestañas reaccionen
             window.dispatchEvent(new Event('storage'));
 
-            // Feedback Visual
             const btn = document.getElementById('submitBtn');
             btn.innerHTML = '<span class="animate-spin mr-2"><i class="fas fa-circle-notch"></i></span> Procesando...';
             btn.disabled = true;
 
             setTimeout(() => {
                 document.getElementById('form-state').classList.add('hidden');
-                
                 const successState = document.getElementById('success-state');
                 successState.classList.remove('hidden');
                 successState.classList.add('fade-in');
