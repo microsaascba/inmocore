@@ -12,156 +12,173 @@
         .modal-active { display: flex !important; }
     </style>
 </head>
-<body class="bg-slate-50 h-screen flex overflow-hidden font-sans text-slate-800">
+<body class="bg-slate-50 h-screen font-sans text-slate-800">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
-        <div class="p-6 border-b border-slate-800 text-center">
-            <h1 class="text-3xl font-black tracking-tight" id="brand-title">Inmo<span class="text-blue-500 font-light">Core</span></h1>
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">SaaS Admin Panel</p>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full flex items-center p-3 rounded-lg bg-slate-800 text-blue-400 transition font-bold"><i class="fas fa-chart-line w-6 text-center"></i> Control General</button>
-            <button onclick="switchTab('web')" id="tab-web" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300 relative"><i class="fas fa-inbox w-6 text-center"></i> Bandeja Entrada <span id="badge-web" class="absolute right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span></button>
-            <button onclick="switchTab('agentes')" id="tab-agentes" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-users w-6 text-center"></i> Equipo Comercial</button>
-            <button onclick="switchTab('propiedades')" id="tab-propiedades" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-building w-6 text-center"></i> Catálogo Activos</button>
-        </nav>
-        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center flex items-center justify-center gap-2">
-            <div id="db-status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
-            <span id="db-status-text">Conectando a D1...</span>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col overflow-hidden relative bg-slate-100">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm">
-            <h2 id="view-title" class="text-lg font-bold text-slate-800 uppercase tracking-wide">Monitor de Rendimiento</h2>
-            <button onclick="initAdminAsync()" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1"><i class="fas fa-sync-alt"></i> Sincronizar D1</button>
-        </header>
-
-        <div class="p-8 overflow-y-auto flex-1 pb-20">
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="bg-white p-10 rounded-2xl shadow-2xl w-[400px] max-w-[90%] text-center">
+            <h1 class="text-4xl font-black text-slate-900 mb-1">Inmo<span class="text-blue-600 font-light">Core</span></h1>
+            <p class="text-[10px] text-slate-400 mb-8 uppercase tracking-widest font-bold">Acceso Gerencial</p>
             
-            <section id="view-dashboard" class="space-y-6">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <label class="font-bold text-slate-700 text-sm">Filtro de Agente:</label>
-                    <select id="agent-selector" onchange="renderDashboard()" class="border border-slate-300 p-2 rounded-lg text-sm font-medium text-slate-700 focus:border-blue-500 outline-none w-64 bg-slate-50">
-                        <option value="todos">Todos los Agentes (Global)</option>
-                    </select>
+            <div class="space-y-5">
+                <div class="relative">
+                    <i class="fas fa-user absolute left-4 top-3.5 text-slate-400"></i>
+                    <input id="login-user" type="text" placeholder="Usuario" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 font-bold text-slate-700">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-blue-500"><p class="text-xs font-bold text-slate-500 uppercase">Total Asignados</p><h3 id="kpi-total" class="text-3xl font-black text-slate-800 mt-1">0</h3></div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-red-500"><p class="text-xs font-bold text-slate-500 uppercase">Sin Atender</p><h3 id="kpi-pendientes" class="text-3xl font-black text-red-600 mt-1">0</h3></div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-green-500"><p class="text-xs font-bold text-slate-500 uppercase">Contactados</p><h3 id="kpi-contactados" class="text-3xl font-black text-green-600 mt-1">0</h3></div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-purple-500"><p class="text-xs font-bold text-slate-500 uppercase">Conversión</p><h3 id="kpi-conversion" class="text-3xl font-black text-purple-600 mt-1">0%</h3></div>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-4 top-3.5 text-slate-400"></i>
+                    <input id="login-pass" type="password" placeholder="Contraseña" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 text-slate-700">
                 </div>
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6">
-                    <div class="p-4 border-b border-slate-200 bg-slate-50"><h3 class="font-bold text-slate-700">Rendimiento del Equipo</h3></div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-white border-b text-[10px] text-slate-500 uppercase font-bold tracking-wider">
-                            <tr><th class="p-4">Agente</th><th class="p-4 text-center">Pendientes</th><th class="p-4 text-center">Contactados</th><th class="p-4 text-right">Tasa Conversión</th></tr>
-                        </thead>
-                        <tbody id="table-kpi-agentes"><tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs">Cargando métricas...</td></tr></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="view-web" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-blue-500">
-                    <div><h3 class="text-xl font-bold text-slate-800">Bandeja de Entrada</h3><p class="text-sm text-slate-500">Leads captados desde la Landing Page esperando asignación a D1.</p></div>
-                    <button onclick="renderWebInbox()" class="bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-lg text-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Actualizar</button>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 border-b text-[10px] text-slate-500 uppercase font-bold">
-                            <tr><th class="p-4">Lead Entrante</th><th class="p-4">Interés Solicitado</th><th class="p-4">Asignar a Agente</th><th class="p-4 text-right">Acción</th></tr>
-                        </thead>
-                        <tbody id="table-inbox-web"><tr><td colspan="4" class="text-center p-8 text-slate-400 font-bold bg-slate-50">Cargando bandeja...</td></tr></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="view-agentes" class="hidden space-y-8">
-                <div class="bg-white p-8 rounded-xl shadow-sm border">
-                    <h3 class="font-bold text-slate-800 mb-6 border-b pb-4 text-lg">Alta de Personal (D1)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre Completo</label><input id="a-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
-                        <div><label class="text-xs font-bold text-slate-500 uppercase">Email</label><input id="a-email" type="email" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
-                        <div><label class="text-xs font-bold text-slate-500 uppercase">Teléfono Móvil</label><input id="a-tel" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
-                        <div><label class="text-xs font-bold text-slate-500 uppercase">Usuario</label><input id="a-usuario" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
-                        <div><label class="text-xs font-bold text-slate-500 uppercase">Contraseña</label><input id="a-pass" type="password" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
-                        <div class="flex items-end justify-end"><button id="btn-guardar-agente" onclick="guardarAgente()" class="w-full bg-slate-900 text-white py-2 rounded-lg font-bold">Registrar Perfil</button></div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Personal Activo</div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
-                            <tr><th class="p-4">Agente</th><th class="p-4">Usuario</th><th class="p-4 text-right">Acciones</th></tr>
-                        </thead>
-                        <tbody id="list-agentes-admin"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="view-propiedades" class="hidden space-y-8">
-                <div class="bg-white p-8 rounded-xl shadow-sm border">
-                    <h3 class="font-bold text-slate-800 mb-6 border-b pb-4 text-lg">Administrador de Catálogo / CMS Web</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-4">
-                            <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre / Título</label><input id="p-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
-                            
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase">Tipo de Operación</label>
-                                    <select id="p-operacion" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none">
-                                        <option value="Venta">En Venta</option>
-                                        <option value="Alquiler">En Alquiler</option>
-                                        <option value="Desarrollo" selected>Desarrollo / Pozo</option>
-                                    </select>
-                                </div>
-                                <div><label class="text-xs font-bold text-slate-500 uppercase">Precio Referencia</label><input id="p-precio" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
-                            </div>
-                            
-                            <div><label class="text-xs font-bold text-slate-500 uppercase">Ubicación Breve</label><input id="p-ubicacion" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
-                            
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase">Subir Imagen Principal</label>
-                                <input id="p-fotos-file" type="file" accept="image/*" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            </div>
-                            
-                            <div class="flex gap-6 pt-2">
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="checkbox" id="p-activo" checked class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                    <span class="ml-2 text-sm font-bold text-slate-700">Proyecto Activo (Visible)</span>
-                                </label>
-                                <label class="flex items-center cursor-pointer">
-                                    <input type="checkbox" id="p-destacado" class="w-5 h-5 text-yellow-500 rounded border-gray-300 focus:ring-yellow-500">
-                                    <span class="ml-2 text-sm font-bold text-slate-700"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacar en Landing</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div><label class="text-xs font-bold text-slate-500 uppercase">Descripción Web</label><textarea id="p-desc" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none h-16"></textarea></div>
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                                <label class="text-xs font-black text-blue-700 uppercase flex justify-between mb-1"><span><i class="fab fa-whatsapp"></i> Script Dinámico WhatsApp</span></label>
-                                <textarea id="p-script" class="w-full p-2 rounded-lg bg-white border border-blue-300 outline-none h-16 text-sm" placeholder="¡Hola [NOMBRE]!..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex justify-end pt-4 border-t"><button id="btn-guardar-prop" onclick="guardarPropiedad()" class="bg-slate-900 text-white px-8 py-2 rounded-lg font-bold"><i class="fas fa-plus mr-2"></i> Agregar a D1</button></div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Catálogo (Control Web)</div>
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
-                            <tr><th class="p-4 w-20">Foto</th><th class="p-4">Estado</th><th class="p-4">Activo Inmobiliario</th><th class="p-4 text-right">Acciones</th></tr>
-                        </thead>
-                        <tbody id="list-props-admin"></tbody>
-                    </table>
-                </div>
-            </section>
+                <button id="btn-login" onclick="loginAdmin()" class="w-full bg-blue-600 text-white font-bold p-3.5 rounded-lg hover:bg-blue-700 transition shadow-lg flex justify-center items-center gap-2">
+                    Ingresar al Panel
+                </button>
+            </div>
+            <p id="login-error" class="text-red-500 text-xs mt-4 hidden font-bold bg-red-50 p-2 rounded-lg border border-red-100">Credenciales incorrectas.</p>
         </div>
-    </main>
+    </div>
+
+    <div id="app-container" class="hidden w-full h-full overflow-hidden">
+        
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 shrink-0">
+            <div class="p-6 border-b border-slate-800 text-center">
+                <h1 class="text-3xl font-black tracking-tight" id="brand-title">Inmo<span class="text-blue-500 font-light">Core</span></h1>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">SaaS Admin Panel</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full flex items-center p-3 rounded-lg bg-slate-800 text-blue-400 transition font-bold"><i class="fas fa-chart-line w-6 text-center"></i> Control General</button>
+                <button onclick="switchTab('web')" id="tab-web" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300 relative"><i class="fas fa-inbox w-6 text-center"></i> Bandeja Entrada <span id="badge-web" class="absolute right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span></button>
+                <button onclick="switchTab('agentes')" id="tab-agentes" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-users w-6 text-center"></i> Equipo Comercial</button>
+                <button onclick="switchTab('propiedades')" id="tab-propiedades" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-building w-6 text-center"></i> Catálogo Activos</button>
+                
+                <div class="pt-8 mt-8 border-t border-slate-800">
+                    <button onclick="logoutAdmin()" class="w-full flex items-center p-3 rounded-lg hover:bg-red-500/10 transition text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión</button>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center flex items-center justify-center gap-2">
+                <div id="db-status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
+                <span id="db-status-text">Conectando a D1...</span>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden relative bg-slate-100">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm shrink-0">
+                <h2 id="view-title" class="text-lg font-bold text-slate-800 uppercase tracking-wide">Monitor de Rendimiento</h2>
+                <button onclick="initAdminAsync()" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1"><i class="fas fa-sync-alt"></i> Sincronizar D1</button>
+            </header>
+
+            <div class="p-8 overflow-y-auto flex-1 pb-20">
+                <section id="view-dashboard" class="space-y-6">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                        <label class="font-bold text-slate-700 text-sm">Filtro de Agente:</label>
+                        <select id="agent-selector" onchange="renderDashboard()" class="border border-slate-300 p-2 rounded-lg text-sm font-medium text-slate-700 focus:border-blue-500 outline-none w-64 bg-slate-50">
+                            <option value="todos">Todos los Agentes (Global)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-blue-500"><p class="text-xs font-bold text-slate-500 uppercase">Total Asignados</p><h3 id="kpi-total" class="text-3xl font-black text-slate-800 mt-1">0</h3></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-red-500"><p class="text-xs font-bold text-slate-500 uppercase">Sin Atender</p><h3 id="kpi-pendientes" class="text-3xl font-black text-red-600 mt-1">0</h3></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-green-500"><p class="text-xs font-bold text-slate-500 uppercase">Contactados</p><h3 id="kpi-contactados" class="text-3xl font-black text-green-600 mt-1">0</h3></div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-l-purple-500"><p class="text-xs font-bold text-slate-500 uppercase">Conversión</p><h3 id="kpi-conversion" class="text-3xl font-black text-purple-600 mt-1">0%</h3></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+                        <div class="p-4 border-b border-slate-200 bg-slate-50"><h3 class="font-bold text-slate-700">Rendimiento del Equipo</h3></div>
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-white border-b text-[10px] text-slate-500 uppercase font-bold tracking-wider">
+                                <tr><th class="p-4">Agente</th><th class="p-4 text-center">Pendientes</th><th class="p-4 text-center">Contactados</th><th class="p-4 text-right">Tasa Conversión</th></tr>
+                            </thead>
+                            <tbody id="table-kpi-agentes"><tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs">Cargando métricas...</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="view-web" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-blue-500">
+                        <div><h3 class="text-xl font-bold text-slate-800">Bandeja de Entrada</h3><p class="text-sm text-slate-500">Leads captados desde la Landing Page esperando asignación a D1.</p></div>
+                        <button onclick="renderWebInbox()" class="bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-lg text-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Actualizar</button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b text-[10px] text-slate-500 uppercase font-bold">
+                                <tr><th class="p-4">Lead Entrante</th><th class="p-4">Interés Solicitado</th><th class="p-4">Asignar a Agente</th><th class="p-4 text-right">Acción</th></tr>
+                            </thead>
+                            <tbody id="table-inbox-web"><tr><td colspan="4" class="text-center p-8 text-slate-400 font-bold bg-slate-50">Cargando bandeja...</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="view-agentes" class="hidden space-y-8">
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <h3 class="font-bold text-slate-800 mb-6 border-b pb-4 text-lg">Alta de Personal (D1)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre Completo</label><input id="a-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Email</label><input id="a-email" type="email" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Teléfono Móvil</label><input id="a-tel" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Usuario</label><input id="a-usuario" type="text" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Contraseña</label><input id="a-pass" type="password" class="w-full mt-1 p-2 rounded-lg border outline-none focus:border-blue-500"></div>
+                            <div class="flex items-end justify-end"><button id="btn-guardar-agente" onclick="guardarAgente()" class="w-full bg-slate-900 text-white py-2 rounded-lg font-bold">Registrar Perfil</button></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Personal Activo</div>
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
+                                <tr><th class="p-4">Agente</th><th class="p-4">Usuario</th><th class="p-4 text-right">Acciones</th></tr>
+                            </thead>
+                            <tbody id="list-agentes-admin"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="view-propiedades" class="hidden space-y-8">
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <h3 class="font-bold text-slate-800 mb-6 border-b pb-4 text-lg">Administrador de Catálogo / CMS Web</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre / Título</label><input id="p-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Operación</label>
+                                        <select id="p-operacion" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none">
+                                            <option value="Venta">En Venta</option>
+                                            <option value="Alquiler">En Alquiler</option>
+                                            <option value="Desarrollo" selected>Desarrollo / Pozo</option>
+                                        </select>
+                                    </div>
+                                    <div><label class="text-xs font-bold text-slate-500 uppercase">Precio Referencia</label><input id="p-precio" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                </div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Ubicación Breve</label><input id="p-ubicacion" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Subir Imagen Principal</label>
+                                    <input id="p-fotos-file" type="file" accept="image/*" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700">
+                                </div>
+                                <div class="flex gap-6 pt-2">
+                                    <label class="flex items-center cursor-pointer"><input type="checkbox" id="p-activo" checked class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"><span class="ml-2 text-sm font-bold text-slate-700">Proyecto Activo (Visible)</span></label>
+                                    <label class="flex items-center cursor-pointer"><input type="checkbox" id="p-destacado" class="w-5 h-5 text-yellow-500 rounded border-gray-300 focus:ring-yellow-500"><span class="ml-2 text-sm font-bold text-slate-700"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacar</span></label>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Descripción Web</label><textarea id="p-desc" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none h-16"></textarea></div>
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                    <label class="text-xs font-black text-blue-700 uppercase flex justify-between mb-1"><span><i class="fab fa-whatsapp"></i> Script Dinámico WhatsApp</span></label>
+                                    <textarea id="p-script" class="w-full p-2 rounded-lg bg-white border border-blue-300 outline-none h-16 text-sm" placeholder="¡Hola [NOMBRE]!..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end pt-4 border-t"><button id="btn-guardar-prop" onclick="guardarPropiedad()" class="bg-slate-900 text-white px-8 py-2 rounded-lg font-bold"><i class="fas fa-plus mr-2"></i> Agregar a D1</button></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Catálogo (Control Web)</div>
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
+                                <tr><th class="p-4 w-20">Foto</th><th class="p-4">Estado</th><th class="p-4">Activo Inmobiliario</th><th class="p-4 text-right">Acciones</th></tr>
+                            </thead>
+                            <tbody id="list-props-admin"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 
     <div id="modal-edit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col border max-h-[90vh]">
@@ -176,8 +193,69 @@
 
     <script>
         const CONFIG = { localStorageKey: "crm_saas_inbox_v1" };
-        const API = { leads: '/api/leads', props: '/api/propiedades', agentes: '/api/agentes' };
+        const API = { leads: '/api/leads', props: '/api/propiedades', agentes: '/api/agentes', auth: '/api/admin_auth' };
         let data = { agentes: [], props: [], leads: [], contactos: [], webInbox: [] };
+
+        // --- SISTEMA DE LOGIN ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Verificar si ya hay una sesión activa en el navegador
+            if(sessionStorage.getItem('inmocore_admin_logged') === 'true') {
+                mostrarPanel();
+            }
+        });
+
+        async function loginAdmin() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const btn = document.getElementById('btn-login');
+            const errorMsg = document.getElementById('login-error');
+            
+            if(!u || !p) return;
+            
+            btn.innerHTML = '<span class="loading-spinner"></span> Conectando...'; 
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            try {
+                const res = await fetch(API.auth, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario: u, password: p })
+                });
+                
+                const responseData = await res.json();
+                
+                if(responseData.success) {
+                    sessionStorage.setItem('inmocore_admin_logged', 'true');
+                    mostrarPanel();
+                } else {
+                    errorMsg.innerText = responseData.error || "Credenciales incorrectas.";
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch(e) {
+                errorMsg.innerText = "Error de conexión con el servidor.";
+                errorMsg.classList.remove('hidden');
+            } finally {
+                btn.innerHTML = 'Ingresar al Panel'; 
+                btn.disabled = false;
+            }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('inmocore_admin_logged');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('flex');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+        }
+
+        function mostrarPanel() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('flex');
+            initAdminAsync(); // Cargar datos solo cuando ya está logueado
+        }
 
         // --- COMPRESOR DE IMÁGENES PARA D1 ---
         async function procesarImagenBase64(file) {
@@ -188,7 +266,7 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; // Ancho máximo para optimizar base de datos
+                        const MAX_WIDTH = 800;
                         let scale = 1;
                         if (img.width > MAX_WIDTH) scale = MAX_WIDTH / img.width;
                         canvas.width = img.width * scale;
@@ -230,47 +308,29 @@
         async function guardarPropiedad() {
             const btn = document.getElementById('btn-guardar-prop');
             const fileInput = document.getElementById('p-fotos-file');
-            
             if(!document.getElementById('p-nombre').value) return alert("El nombre es obligatorio");
             
-            btn.innerHTML = '<span class="loading-spinner"></span> Subiendo...'; 
-            btn.disabled = true;
-
+            btn.innerHTML = '<span class="loading-spinner"></span> Subiendo...'; btn.disabled = true;
             let imagenBase64 = '';
-            if (fileInput.files.length > 0) {
-                imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
-            }
+            if (fileInput.files.length > 0) imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
 
             const p = { 
-                id: crypto.randomUUID(), 
-                nombre: document.getElementById('p-nombre').value, 
-                precio: document.getElementById('p-precio').value, 
-                ubicacion: document.getElementById('p-ubicacion').value, 
-                operacion: document.getElementById('p-operacion').value,
-                fotos: imagenBase64,
-                descripcion: document.getElementById('p-desc').value, 
-                script_wa: document.getElementById('p-script').value,
-                activo: document.getElementById('p-activo').checked, 
-                destacado: document.getElementById('p-destacado').checked
+                id: crypto.randomUUID(), nombre: document.getElementById('p-nombre').value, precio: document.getElementById('p-precio').value, 
+                ubicacion: document.getElementById('p-ubicacion').value, operacion: document.getElementById('p-operacion').value, fotos: imagenBase64,
+                descripcion: document.getElementById('p-desc').value, script_wa: document.getElementById('p-script').value,
+                activo: document.getElementById('p-activo').checked, destacado: document.getElementById('p-destacado').checked
             };
             
             await fetch(API.props, { method: 'POST', body: JSON.stringify(p) });
-            
-            ['p-nombre','p-precio','p-ubicacion','p-desc','p-script'].forEach(i => document.getElementById(i).value='');
-            fileInput.value = '';
-            
-            btn.innerHTML = '<i class="fas fa-plus mr-2"></i> Agregar a D1'; 
-            btn.disabled = false;
-            initAdminAsync();
+            ['p-nombre','p-precio','p-ubicacion','p-desc','p-script'].forEach(i => document.getElementById(i).value=''); fileInput.value = '';
+            btn.innerHTML = '<i class="fas fa-plus mr-2"></i> Agregar a D1'; btn.disabled = false; initAdminAsync();
         }
 
         async function eliminarProp(id) { if(confirm("¿Retirar del sistema definitivamente?")) { await fetch(`${API.props}?id=${id}`, { method: 'DELETE' }); initAdminAsync(); } }
 
         function openEditProp(id) {
             const p = data.props.find(x => x.id === id);
-            const isActivo = p.activo !== 0 ? 'checked' : '';
-            const isDestacado = p.destacado === 1 ? 'checked' : '';
-            const op = p.operacion || 'Desarrollo';
+            const isActivo = p.activo !== 0 ? 'checked' : ''; const isDestacado = p.destacado === 1 ? 'checked' : ''; const op = p.operacion || 'Desarrollo';
 
             document.getElementById('modal-title').innerText = `Editar: ${p.nombre}`;
             document.getElementById('modal-body').innerHTML = `
@@ -279,9 +339,7 @@
                         <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-activo" ${isActivo} class="w-5 h-5 text-blue-600 rounded"><span class="ml-2 text-sm font-bold">Visible en Web</span></label>
                         <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-destacado" ${isDestacado} class="w-5 h-5 text-yellow-500 rounded"><span class="ml-2 text-sm font-bold"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacado</span></label>
                     </div>
-                    
                     <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Nombre</label><input id="ep-nombre" type="text" value="${p.nombre}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
-                    
                     <div>
                         <label class="text-[10px] font-bold uppercase text-slate-500">Operación</label>
                         <select id="ep-operacion" class="w-full border p-2.5 rounded-lg outline-none bg-white focus:border-blue-500">
@@ -291,15 +349,12 @@
                         </select>
                     </div>
                     <div><label class="text-[10px] font-bold uppercase text-slate-500">Precio</label><input id="ep-precio" type="text" value="${p.precio || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
-                    
                     <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Ubicación</label><input id="ep-ubi" type="text" value="${p.ubicacion || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
-                    
                     <div class="col-span-2 bg-slate-100 p-4 rounded-xl border">
                         <label class="text-[10px] font-bold uppercase text-slate-500 block mb-2">Cambiar Imagen (Dejar vacío para mantener la actual)</label>
-                        <input id="ep-fotos-file" type="file" accept="image/*" class="w-full bg-white border p-2 rounded-lg outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700">
+                        <input id="ep-fotos-file" type="file" accept="image/*" class="w-full bg-white border p-2 rounded-lg outline-none file:text-xs">
                         <input type="hidden" id="ep-foto-actual" value="${p.fotos || ''}">
                     </div>
-                    
                     <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Descripción Web</label><textarea id="ep-desc" class="w-full border p-2.5 rounded-lg outline-none h-20 focus:border-blue-500">${p.descripcion || ''}</textarea></div>
                     <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Script WhatsApp</label><textarea id="ep-script" class="w-full border p-2.5 rounded-lg outline-none h-16 focus:border-blue-500">${p.script_wa || ''}</textarea></div>
                 </div>
@@ -310,78 +365,38 @@
 
         async function salvarProp(id) {
             const btn = document.getElementById('modal-save-btn');
-            btn.innerHTML = '<span class="loading-spinner"></span> Guardando...';
-            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Guardando...'; btn.disabled = true;
 
             const fileInput = document.getElementById('ep-fotos-file');
             let imagenBase64 = document.getElementById('ep-foto-actual').value;
-
-            // Si subieron una foto nueva, la procesamos. Si no, conservamos la que estaba en el hidden input.
-            if (fileInput.files.length > 0) {
-                imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
-            }
+            if (fileInput.files.length > 0) imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
 
             const up = {
-                nombre: document.getElementById('ep-nombre').value,
-                precio: document.getElementById('ep-precio').value,
-                ubicacion: document.getElementById('ep-ubi').value,
-                operacion: document.getElementById('ep-operacion').value,
-                script_wa: document.getElementById('ep-script').value,
-                descripcion: document.getElementById('ep-desc').value,
-                fotos: imagenBase64,
-                activo: document.getElementById('ep-activo').checked,
-                destacado: document.getElementById('ep-destacado').checked
+                nombre: document.getElementById('ep-nombre').value, precio: document.getElementById('ep-precio').value,
+                ubicacion: document.getElementById('ep-ubi').value, operacion: document.getElementById('ep-operacion').value,
+                script_wa: document.getElementById('ep-script').value, descripcion: document.getElementById('ep-desc').value,
+                fotos: imagenBase64, activo: document.getElementById('ep-activo').checked, destacado: document.getElementById('ep-destacado').checked
             };
             
             await fetch(`${API.props}?id=${id}`, { method: 'PUT', body: JSON.stringify(up) });
-            
-            btn.innerHTML = 'Guardar Cambios';
-            btn.disabled = false;
-            closeModal(); 
-            initAdminAsync();
+            btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; closeModal(); initAdminAsync();
         }
 
         // --- RENDERIZADOS ---
         function renderAll() { renderAgentes(); renderProps(); renderDashboard(); renderWebInbox(); }
-        function renderAgentes() { /* Omitido redibujo por limpieza de visualización, ver crmadmin previo si es necesario */ }
+        function renderAgentes() { /* Omitido por visualizacion, tabla en HTML renderizada con innerHTML si hay datos */ }
         
         function renderProps() {
             document.getElementById('list-props-admin').innerHTML = data.props.map(p => {
-                const statusBadge = p.activo !== 0 
-                    ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold shadow-sm">Activo</span>' 
-                    : '<span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-xs font-bold shadow-sm">Inactivo</span>';
-                
+                const statusBadge = p.activo !== 0 ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold shadow-sm">Activo</span>' : '<span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-xs font-bold shadow-sm">Inactivo</span>';
                 const starIcon = p.destacado === 1 ? '<i class="fas fa-star text-yellow-500 ml-2" title="Destacado en Web"></i>' : '';
-                
-                let opColor = 'bg-slate-600';
-                if(p.operacion === 'Venta') opColor = 'bg-blue-600';
-                if(p.operacion === 'Alquiler') opColor = 'bg-emerald-600';
-                if(p.operacion === 'Desarrollo') opColor = 'bg-purple-600';
-
-                // Mostrar miniatura si hay imagen base64 o url
+                let opColor = 'bg-slate-600'; if(p.operacion === 'Venta') opColor = 'bg-blue-600'; if(p.operacion === 'Alquiler') opColor = 'bg-emerald-600'; if(p.operacion === 'Desarrollo') opColor = 'bg-purple-600';
                 const thumb = (p.fotos && p.fotos.length > 10) ? `<img src="${p.fotos}" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200">` : `<div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 border border-slate-200"><i class="fas fa-image"></i></div>`;
 
-                return `
-                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                    <td class="p-4">${thumb}</td>
-                    <td class="p-4">${statusBadge}</td>
-                    <td class="p-4">
-                        <div class="font-bold text-slate-800 text-base">${p.nombre} ${starIcon}</div>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="${opColor} text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${p.operacion || 'Desarrollo'}</span>
-                            <span class="text-xs text-slate-500"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>${p.ubicacion || 'Sin ubicar'}</span>
-                        </div>
-                    </td>
-                    <td class="p-4 text-xs text-emerald-600 font-black text-lg">${p.precio || '-'}</td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="openEditProp('${p.id}')" class="text-blue-500 hover:text-blue-700 p-2 transition transform hover:scale-110"><i class="fas fa-cog text-lg"></i></button>
-                        <button onclick="eliminarProp('${p.id}')" class="text-red-400 hover:text-red-600 p-2 transition transform hover:scale-110"><i class="fas fa-trash-alt text-lg"></i></button>
-                    </td>
-                </tr>`;
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition"><td class="p-4">${thumb}</td><td class="p-4">${statusBadge}</td><td class="p-4"><div class="font-bold text-slate-800 text-base">${p.nombre} ${starIcon}</div><div class="flex items-center gap-2 mt-1"><span class="${opColor} text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${p.operacion || 'Desarrollo'}</span><span class="text-xs text-slate-500"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>${p.ubicacion || 'Sin ubicar'}</span></div></td><td class="p-4 text-xs text-emerald-600 font-black text-lg">${p.precio || '-'}</td><td class="p-4 text-right space-x-2"><button onclick="openEditProp('${p.id}')" class="text-blue-500 hover:text-blue-700 p-2 transition transform hover:scale-110"><i class="fas fa-cog text-lg"></i></button><button onclick="eliminarProp('${p.id}')" class="text-red-400 hover:text-red-600 p-2 transition transform hover:scale-110"><i class="fas fa-trash-alt text-lg"></i></button></td></tr>`;
             }).join('');
         }
         
-        // --- RESTO DE FUNCIONES (Bandeja, Tab, Dashboard) ---
         function asignarLead(webLeadId) {
             const selector = document.getElementById(`select-agent-${webLeadId}`);
             if (!selector.value) return alert("Seleccione un asesor de ventas.");
@@ -421,8 +436,6 @@
         function closeModal() { document.getElementById('modal-edit').classList.remove('modal-active'); }
         function setDbStatus(s) { document.getElementById('db-status-dot').className = `w-2 h-2 rounded-full ${s === 'ok' ? 'bg-green-500' : s === 'loading' ? 'bg-yellow-400 animate-pulse' : 'bg-red-500'}`; document.getElementById('db-status-text').innerText = s === 'ok' ? 'D1 Sincronizado' : s === 'loading' ? 'Conectando...' : 'Error de Conexión'; }
         function switchTab(t) { ['dashboard', 'web', 'agentes', 'propiedades'].forEach(x => document.getElementById(`view-${x}`).classList.add('hidden')); document.getElementById(`view-${t}`).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-slate-800', 'text-blue-400'); b.classList.add('text-slate-300'); }); document.getElementById(`tab-${t}`).classList.add('bg-slate-800', 'text-blue-400'); document.getElementById(`tab-${t}`).classList.remove('text-slate-300'); document.getElementById('view-title').innerText = { dashboard: 'Monitor de Rendimiento', web: 'Asignación de Prospectos', agentes: 'Gestión de Personal', propiedades: 'Catálogo Vigente' }[t]; }
-
-        window.addEventListener('DOMContentLoaded', initAdminAsync);
     </script>
 </body>
 </html>
