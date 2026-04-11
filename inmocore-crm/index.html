@@ -11,7 +11,6 @@
         
         body { font-family: 'Inter', sans-serif; }
         
-        /* CORRECCIÓN: Ruta de imagen apunta a la raíz donde está el HTML */
         .hero-bg {
             background-image: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('img10.jpg');
             background-size: cover;
@@ -142,34 +141,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">Proyectos Destacados</h2>
-                <p class="text-slate-500 max-w-2xl mx-auto">Conoce nuestras oportunidades de inversión vigentes. Calidad constructiva y ubicaciones estratégicas garantizadas.</p>
+                <p class="text-slate-500 max-w-2xl mx-auto">Catálogo actualizado en tiempo real. Calidad constructiva y ubicaciones estratégicas garantizadas.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="bg-slate-50 rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
-                    <div class="h-64 overflow-hidden relative">
-                        <img src="img11.jpg" alt="Edificio KAIZEN" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Posesión Inmediata</div>
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Edificio KAIZEN</h3>
-                        <p class="text-slate-500 mb-4 text-sm"><i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>Nueva Córdoba - Zona Universitaria</p>
-                        <p class="text-slate-600 mb-6 line-clamp-2">Departamentos premium de 1 y 2 dormitorios. Amenities de primer nivel incluyendo piscina, SUM y asadores en terraza.</p>
-                        <a href="#contacto" class="text-blue-600 font-bold hover:text-blue-800 flex items-center transition">Consultar Precios <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
-                    <div class="h-64 overflow-hidden relative">
-                        <img src="img12.jpg" alt="Lotes Manantiales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Preventa</div>
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Lotes Premium Sur</h3>
-                        <p class="text-slate-500 mb-4 text-sm"><i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>Barrio Cerrado - Zona Sur</p>
-                        <p class="text-slate-600 mb-6 line-clamp-2">Lotes desde 360m2 con seguridad 24hs e infraestructura subterránea. Financiación directa a medida.</p>
-                        <a href="#contacto" class="text-blue-600 font-bold hover:text-blue-800 flex items-center transition">Solicitar Masterplan <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
-                    </div>
+            <div id="contenedor-proyectos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="col-span-full text-center text-slate-400 py-10">
+                    <i class="fas fa-circle-notch fa-spin text-3xl text-blue-500 mb-3"></i>
+                    <p>Sincronizando catálogo con el CRM...</p>
                 </div>
             </div>
         </div>
@@ -238,9 +216,11 @@
             localStorageKey: "crm_saas_inbox_v1" 
         };
 
-        // NUEVO: Cargar el catálogo desde D1 al iniciar la página
-        async function cargarCatalogoPropiedades() {
+        // Función que carga los proyectos del CRM a la Web
+        async function cargarDatosDinamicos() {
             const selectElement = document.getElementById('emprendimiento');
+            const contenedorProyectos = document.getElementById('contenedor-proyectos');
+            
             try {
                 const response = await fetch('/api/propiedades');
                 if (!response.ok) throw new Error('Error en API');
@@ -248,33 +228,75 @@
                 const propiedades = await response.json();
                 
                 if (propiedades.length === 0) {
-                    selectElement.innerHTML = '<option value="" disabled selected>No hay proyectos en catálogo</option>';
+                    selectElement.innerHTML = '<option value="" disabled selected>Catálogo en mantenimiento</option>';
+                    contenedorProyectos.innerHTML = '<p class="col-span-full text-center text-slate-500">No hay proyectos publicados actualmente.</p>';
                     return;
                 }
 
-                // Limpiar y llenar con los datos reales
+                // 1. Llenar el menú desplegable del formulario
                 selectElement.innerHTML = '<option value="" disabled selected>-- Elige un Proyecto --</option>';
                 propiedades.forEach(prop => {
                     selectElement.innerHTML += `<option value="${prop.nombre}">${prop.nombre}</option>`;
+                });
+
+                // 2. Construir las tarjetas de proyectos destacados
+                contenedorProyectos.innerHTML = '';
+                // Limitamos a mostrar máximo 6 para mantener el diseño limpio
+                const destacadas = propiedades.slice(0, 6); 
+
+                destacadas.forEach(prop => {
+                    // Si el admin no puso foto, usamos img11.jpg por defecto
+                    const imgUrl = (prop.fotos && prop.fotos.includes('.')) ? prop.fotos : 'img11.jpg';
+                    const precioDato = prop.precio || 'Consultar';
+                    
+                    contenedorProyectos.innerHTML += `
+                        <div class="bg-slate-50 rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-300 group flex flex-col">
+                            <div class="h-56 overflow-hidden relative shrink-0">
+                                <img src="${imgUrl}" alt="${prop.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-md">Destacado</div>
+                            </div>
+                            <div class="p-6 flex flex-col flex-1">
+                                <h3 class="text-xl font-bold text-slate-900 mb-1 leading-tight">${prop.nombre}</h3>
+                                <p class="text-slate-500 mb-4 text-xs font-medium"><i class="fas fa-map-marker-alt text-blue-500 mr-1.5"></i>${prop.ubicacion || 'Ubicación a confirmar'}</p>
+                                <p class="text-slate-600 mb-6 text-sm line-clamp-3 flex-1">${prop.descripcion || 'Excelente oportunidad de inversión inmobiliaria.'}</p>
+                                <div class="flex justify-between items-end border-t border-slate-100 pt-4 mt-auto">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Valor Referencia</p>
+                                        <span class="text-lg font-black text-emerald-600">${precioDato}</span>
+                                    </div>
+                                    <a href="#contacto" onclick="seleccionarInteresYScroll('${prop.nombre}')" class="text-blue-600 font-bold text-sm hover:text-blue-800 flex items-center transition bg-blue-50 px-3 py-1.5 rounded-lg">Consultar <i class="fas fa-arrow-right ml-2 text-xs"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
                 
             } catch (error) {
                 console.error("Error al cargar propiedades:", error);
                 selectElement.innerHTML = '<option value="Consulta General">Consulta General</option>';
+                contenedorProyectos.innerHTML = '<p class="col-span-full text-center text-red-400">Error al conectar con el servidor.</p>';
             }
         }
 
-        // Ejecutar carga dinámica
-        window.addEventListener('DOMContentLoaded', cargarCatalogoPropiedades);
+        // Auto-seleccionar proyecto al hacer click en "Consultar" desde la tarjeta
+        window.seleccionarInteresYScroll = function(nombreProyecto) {
+            const selectElement = document.getElementById('emprendimiento');
+            selectElement.value = nombreProyecto;
+            // Animación suave hacia el formulario
+            document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => document.getElementById('nombre').focus(), 500);
+        };
 
+        // Iniciar la carga al abrir la web
+        window.addEventListener('DOMContentLoaded', cargarDatosDinamicos);
+
+        // Envío del Formulario
         document.getElementById('leadForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const nombre = document.getElementById('nombre').value;
             const email = document.getElementById('email').value;
             const telefono = document.getElementById('telefono').value;
-            
-            // Tomar el valor del <select> dinámico
             const emprendimientoSeleccionado = document.getElementById('emprendimiento').value;
 
             const nuevoLead = {
