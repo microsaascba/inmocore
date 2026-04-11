@@ -11,8 +11,8 @@ export async function onRequestPost(context) {
     try {
         const data = await context.request.json();
         await context.env.DB.prepare(
-            "INSERT INTO Propiedades (id, nombre, precio, ubicacion, maps, fotos, descripcion, speech, script_wa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        ).bind(data.id, data.nombre, data.precio, data.ubicacion, data.maps, data.fotos, data.descripcion, data.speech, data.script_wa).run();
+            "INSERT INTO Propiedades (id, nombre, precio, ubicacion, maps, fotos, descripcion, speech, script_wa, destacado, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        ).bind(data.id, data.nombre, data.precio, data.ubicacion, data.maps, data.fotos, data.descripcion, data.speech, data.script_wa, data.destacado ? 1 : 0, data.activo ? 1 : 0).run();
         
         return new Response(JSON.stringify({ success: true }), { status: 201 });
     } catch (e) {
@@ -20,14 +20,13 @@ export async function onRequestPost(context) {
     }
 }
 
-// NUEVO: Para poder editar propiedades desde el Admin
 export async function onRequestPut(context) {
     try {
         const id = new URL(context.request.url).searchParams.get('id');
         const data = await context.request.json();
         await context.env.DB.prepare(
-            "UPDATE Propiedades SET nombre=?, precio=?, ubicacion=?, script_wa=?, descripcion=? WHERE id=?"
-        ).bind(data.nombre, data.precio, data.ubicacion, data.script_wa, data.descripcion, id).run();
+            "UPDATE Propiedades SET nombre=?, precio=?, ubicacion=?, script_wa=?, descripcion=?, fotos=?, destacado=?, activo=? WHERE id=?"
+        ).bind(data.nombre, data.precio, data.ubicacion, data.script_wa, data.descripcion, data.fotos, data.destacado ? 1 : 0, data.activo ? 1 : 0, id).run();
         
         return new Response(JSON.stringify({ok: true}));
     } catch (e) {
@@ -35,7 +34,6 @@ export async function onRequestPut(context) {
     }
 }
 
-// NUEVO: Para poder borrar propiedades desde el Admin
 export async function onRequestDelete(context) {
     try {
         const id = new URL(context.request.url).searchParams.get('id');
