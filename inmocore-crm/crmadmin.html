@@ -38,6 +38,7 @@
         </header>
 
         <div class="p-8 overflow-y-auto flex-1 pb-20">
+            
             <section id="view-dashboard" class="space-y-6">
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
                     <label class="font-bold text-slate-700 text-sm">Filtro de Agente:</label>
@@ -106,16 +107,30 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
                             <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre / Título</label><input id="p-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                            
                             <div class="grid grid-cols-2 gap-4">
-                                <div><label class="text-xs font-bold text-slate-500 uppercase">Precio</label><input id="p-precio" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
-                                <div><label class="text-xs font-bold text-slate-500 uppercase">Ubicación</label><input id="p-ubicacion" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Tipo de Operación</label>
+                                    <select id="p-operacion" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none">
+                                        <option value="Venta">En Venta</option>
+                                        <option value="Alquiler">En Alquiler</option>
+                                        <option value="Desarrollo" selected>Desarrollo / Pozo</option>
+                                    </select>
+                                </div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Precio Referencia</label><input id="p-precio" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
                             </div>
-                            <div><label class="text-xs font-bold text-slate-500 uppercase">Archivo de Imagen (Ej: img10.jpg)</label><input id="p-fotos" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                            
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Ubicación Breve</label><input id="p-ubicacion" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                            
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase">Subir Imagen Principal</label>
+                                <input id="p-fotos-file" type="file" accept="image/*" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            </div>
                             
                             <div class="flex gap-6 pt-2">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" id="p-activo" checked class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                    <span class="ml-2 text-sm font-bold text-slate-700">Proyecto Activo (Visible en Web)</span>
+                                    <span class="ml-2 text-sm font-bold text-slate-700">Proyecto Activo (Visible)</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" id="p-destacado" class="w-5 h-5 text-yellow-500 rounded border-gray-300 focus:ring-yellow-500">
@@ -123,6 +138,7 @@
                                 </label>
                             </div>
                         </div>
+                        
                         <div class="space-y-4">
                             <div><label class="text-xs font-bold text-slate-500 uppercase">Descripción Web</label><textarea id="p-desc" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none h-16"></textarea></div>
                             <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
@@ -138,7 +154,7 @@
                     <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Catálogo (Control Web)</div>
                     <table class="w-full text-left text-sm">
                         <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
-                            <tr><th class="p-4">Estado</th><th class="p-4">Activo Inmobiliario</th><th class="p-4">Valor</th><th class="p-4 text-right">Acciones</th></tr>
+                            <tr><th class="p-4 w-20">Foto</th><th class="p-4">Estado</th><th class="p-4">Activo Inmobiliario</th><th class="p-4 text-right">Acciones</th></tr>
                         </thead>
                         <tbody id="list-props-admin"></tbody>
                     </table>
@@ -147,13 +163,13 @@
         </div>
     </main>
 
-    <div id="modal-edit" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col border">
-            <div class="p-6 border-b flex justify-between items-center"><h3 id="modal-title" class="font-bold text-lg">Editar</h3><button onclick="closeModal()"><i class="fas fa-times"></i></button></div>
-            <div id="modal-body" class="p-6 space-y-4 overflow-y-auto bg-slate-50"></div>
+    <div id="modal-edit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col border max-h-[90vh]">
+            <div class="p-6 border-b flex justify-between items-center"><h3 id="modal-title" class="font-bold text-lg uppercase tracking-wide">Editar Proyecto</h3><button onclick="closeModal()"><i class="fas fa-times text-slate-400 hover:text-slate-700"></i></button></div>
+            <div id="modal-body" class="p-6 space-y-4 overflow-y-auto bg-slate-50/50"></div>
             <div class="p-6 border-t bg-white flex justify-end gap-3">
-                <button onclick="closeModal()" class="px-6 py-2 text-sm font-medium text-slate-600">Cancelar</button>
-                <button id="modal-save-btn" class="px-8 py-2 bg-slate-900 text-white rounded-lg font-bold">Guardar Cambios</button>
+                <button onclick="closeModal()" class="px-6 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                <button id="modal-save-btn" class="px-8 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 shadow-lg">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -162,6 +178,30 @@
         const CONFIG = { localStorageKey: "crm_saas_inbox_v1" };
         const API = { leads: '/api/leads', props: '/api/propiedades', agentes: '/api/agentes' };
         let data = { agentes: [], props: [], leads: [], contactos: [], webInbox: [] };
+
+        // --- COMPRESOR DE IMÁGENES PARA D1 ---
+        async function procesarImagenBase64(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve('');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // Ancho máximo para optimizar base de datos
+                        let scale = 1;
+                        if (img.width > MAX_WIDTH) scale = MAX_WIDTH / img.width;
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
         async function initAdminAsync() {
             setDbStatus('loading');
@@ -189,39 +229,79 @@
         // --- PROPIEDADES ---
         async function guardarPropiedad() {
             const btn = document.getElementById('btn-guardar-prop');
-            const p = { 
-                id: crypto.randomUUID(), nombre: document.getElementById('p-nombre').value, precio: document.getElementById('p-precio').value, 
-                ubicacion: document.getElementById('p-ubicacion').value, fotos: document.getElementById('p-fotos').value,
-                descripcion: document.getElementById('p-desc').value, script_wa: document.getElementById('p-script').value,
-                activo: document.getElementById('p-activo').checked, destacado: document.getElementById('p-destacado').checked
-            };
-            if(!p.nombre) return alert("El nombre es obligatorio");
+            const fileInput = document.getElementById('p-fotos-file');
+            
+            if(!document.getElementById('p-nombre').value) return alert("El nombre es obligatorio");
+            
+            btn.innerHTML = '<span class="loading-spinner"></span> Subiendo...'; 
             btn.disabled = true;
+
+            let imagenBase64 = '';
+            if (fileInput.files.length > 0) {
+                imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
+            }
+
+            const p = { 
+                id: crypto.randomUUID(), 
+                nombre: document.getElementById('p-nombre').value, 
+                precio: document.getElementById('p-precio').value, 
+                ubicacion: document.getElementById('p-ubicacion').value, 
+                operacion: document.getElementById('p-operacion').value,
+                fotos: imagenBase64,
+                descripcion: document.getElementById('p-desc').value, 
+                script_wa: document.getElementById('p-script').value,
+                activo: document.getElementById('p-activo').checked, 
+                destacado: document.getElementById('p-destacado').checked
+            };
+            
             await fetch(API.props, { method: 'POST', body: JSON.stringify(p) });
-            initAdminAsync(); btn.disabled = false;
+            
+            ['p-nombre','p-precio','p-ubicacion','p-desc','p-script'].forEach(i => document.getElementById(i).value='');
+            fileInput.value = '';
+            
+            btn.innerHTML = '<i class="fas fa-plus mr-2"></i> Agregar a D1'; 
+            btn.disabled = false;
+            initAdminAsync();
         }
 
-        async function eliminarProp(id) { if(confirm("¿Retirar del sistema?")) { await fetch(`${API.props}?id=${id}`, { method: 'DELETE' }); initAdminAsync(); } }
+        async function eliminarProp(id) { if(confirm("¿Retirar del sistema definitivamente?")) { await fetch(`${API.props}?id=${id}`, { method: 'DELETE' }); initAdminAsync(); } }
 
         function openEditProp(id) {
             const p = data.props.find(x => x.id === id);
-            // Checkboxes values from DB (1 is true, 0 is false)
             const isActivo = p.activo !== 0 ? 'checked' : '';
             const isDestacado = p.destacado === 1 ? 'checked' : '';
+            const op = p.operacion || 'Desarrollo';
 
-            document.getElementById('modal-title').innerText = `Configurar: ${p.nombre}`;
+            document.getElementById('modal-title').innerText = `Editar: ${p.nombre}`;
             document.getElementById('modal-body').innerHTML = `
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2 flex gap-4 bg-white p-4 rounded border mb-2">
-                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-activo" ${isActivo} class="w-4 h-4"><span class="ml-2 text-sm font-bold">Visible en Web</span></label>
-                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-destacado" ${isDestacado} class="w-4 h-4 text-yellow-500"><span class="ml-2 text-sm font-bold"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacado</span></label>
+                    <div class="col-span-2 flex gap-6 bg-white p-4 rounded-xl border mb-2 shadow-sm">
+                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-activo" ${isActivo} class="w-5 h-5 text-blue-600 rounded"><span class="ml-2 text-sm font-bold">Visible en Web</span></label>
+                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-destacado" ${isDestacado} class="w-5 h-5 text-yellow-500 rounded"><span class="ml-2 text-sm font-bold"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacado</span></label>
                     </div>
-                    <div class="col-span-2"><label class="text-[10px] font-bold">Nombre</label><input id="ep-nombre" type="text" value="${p.nombre}" class="w-full border p-2 rounded"></div>
-                    <div><label class="text-[10px] font-bold">Precio</label><input id="ep-precio" type="text" value="${p.precio || ''}" class="w-full border p-2 rounded"></div>
-                    <div><label class="text-[10px] font-bold">Ubicación</label><input id="ep-ubi" type="text" value="${p.ubicacion || ''}" class="w-full border p-2 rounded"></div>
-                    <div class="col-span-2"><label class="text-[10px] font-bold">Imagen (Ej: img11.jpg)</label><input id="ep-fotos" type="text" value="${p.fotos || ''}" class="w-full border p-2 rounded"></div>
-                    <div class="col-span-2"><label class="text-[10px] font-bold">Descripción Web</label><textarea id="ep-desc" class="w-full border p-2 rounded h-16">${p.descripcion || ''}</textarea></div>
-                    <div class="col-span-2"><label class="text-[10px] font-bold">Script WA</label><textarea id="ep-script" class="w-full border p-2 rounded h-16">${p.script_wa || ''}</textarea></div>
+                    
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Nombre</label><input id="ep-nombre" type="text" value="${p.nombre}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-500">Operación</label>
+                        <select id="ep-operacion" class="w-full border p-2.5 rounded-lg outline-none bg-white focus:border-blue-500">
+                            <option value="Venta" ${op==='Venta'?'selected':''}>En Venta</option>
+                            <option value="Alquiler" ${op==='Alquiler'?'selected':''}>En Alquiler</option>
+                            <option value="Desarrollo" ${op==='Desarrollo'?'selected':''}>Desarrollo / Pozo</option>
+                        </select>
+                    </div>
+                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Precio</label><input id="ep-precio" type="text" value="${p.precio || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Ubicación</label><input id="ep-ubi" type="text" value="${p.ubicacion || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    
+                    <div class="col-span-2 bg-slate-100 p-4 rounded-xl border">
+                        <label class="text-[10px] font-bold uppercase text-slate-500 block mb-2">Cambiar Imagen (Dejar vacío para mantener la actual)</label>
+                        <input id="ep-fotos-file" type="file" accept="image/*" class="w-full bg-white border p-2 rounded-lg outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700">
+                        <input type="hidden" id="ep-foto-actual" value="${p.fotos || ''}">
+                    </div>
+                    
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Descripción Web</label><textarea id="ep-desc" class="w-full border p-2.5 rounded-lg outline-none h-20 focus:border-blue-500">${p.descripcion || ''}</textarea></div>
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Script WhatsApp</label><textarea id="ep-script" class="w-full border p-2.5 rounded-lg outline-none h-16 focus:border-blue-500">${p.script_wa || ''}</textarea></div>
                 </div>
             `;
             document.getElementById('modal-save-btn').onclick = () => salvarProp(id);
@@ -230,48 +310,117 @@
 
         async function salvarProp(id) {
             const btn = document.getElementById('modal-save-btn');
-            const up = {
-                nombre: document.getElementById('ep-nombre').value, precio: document.getElementById('ep-precio').value,
-                ubicacion: document.getElementById('ep-ubi').value, script_wa: document.getElementById('ep-script').value,
-                descripcion: document.getElementById('ep-desc').value, fotos: document.getElementById('ep-fotos').value,
-                activo: document.getElementById('ep-activo').checked, destacado: document.getElementById('ep-destacado').checked
-            };
+            btn.innerHTML = '<span class="loading-spinner"></span> Guardando...';
             btn.disabled = true;
+
+            const fileInput = document.getElementById('ep-fotos-file');
+            let imagenBase64 = document.getElementById('ep-foto-actual').value;
+
+            // Si subieron una foto nueva, la procesamos. Si no, conservamos la que estaba en el hidden input.
+            if (fileInput.files.length > 0) {
+                imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
+            }
+
+            const up = {
+                nombre: document.getElementById('ep-nombre').value,
+                precio: document.getElementById('ep-precio').value,
+                ubicacion: document.getElementById('ep-ubi').value,
+                operacion: document.getElementById('ep-operacion').value,
+                script_wa: document.getElementById('ep-script').value,
+                descripcion: document.getElementById('ep-desc').value,
+                fotos: imagenBase64,
+                activo: document.getElementById('ep-activo').checked,
+                destacado: document.getElementById('ep-destacado').checked
+            };
+            
             await fetch(`${API.props}?id=${id}`, { method: 'PUT', body: JSON.stringify(up) });
-            btn.disabled = false; closeModal(); initAdminAsync();
+            
+            btn.innerHTML = 'Guardar Cambios';
+            btn.disabled = false;
+            closeModal(); 
+            initAdminAsync();
         }
 
         // --- RENDERIZADOS ---
         function renderAll() { renderAgentes(); renderProps(); renderDashboard(); renderWebInbox(); }
-        function renderAgentes() { /* Omitido por brevedad en visualizacion, funcionalidad intacta arriba */ }
+        function renderAgentes() { /* Omitido redibujo por limpieza de visualización, ver crmadmin previo si es necesario */ }
         
         function renderProps() {
             document.getElementById('list-props-admin').innerHTML = data.props.map(p => {
                 const statusBadge = p.activo !== 0 
-                    ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Activo</span>' 
-                    : '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">Inactivo</span>';
-                const starIcon = p.destacado === 1 ? '<i class="fas fa-star text-yellow-400 ml-2" title="Destacado en Web"></i>' : '';
+                    ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold shadow-sm">Activo</span>' 
+                    : '<span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-xs font-bold shadow-sm">Inactivo</span>';
                 
+                const starIcon = p.destacado === 1 ? '<i class="fas fa-star text-yellow-500 ml-2" title="Destacado en Web"></i>' : '';
+                
+                let opColor = 'bg-slate-600';
+                if(p.operacion === 'Venta') opColor = 'bg-blue-600';
+                if(p.operacion === 'Alquiler') opColor = 'bg-emerald-600';
+                if(p.operacion === 'Desarrollo') opColor = 'bg-purple-600';
+
+                // Mostrar miniatura si hay imagen base64 o url
+                const thumb = (p.fotos && p.fotos.length > 10) ? `<img src="${p.fotos}" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200">` : `<div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 border border-slate-200"><i class="fas fa-image"></i></div>`;
+
                 return `
                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                    <td class="p-4">${thumb}</td>
                     <td class="p-4">${statusBadge}</td>
-                    <td class="p-4 font-bold text-slate-800">${p.nombre} ${starIcon}</td>
-                    <td class="p-4 text-xs text-slate-600 font-bold">${p.precio || '-'}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800 text-base">${p.nombre} ${starIcon}</div>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="${opColor} text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${p.operacion || 'Desarrollo'}</span>
+                            <span class="text-xs text-slate-500"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>${p.ubicacion || 'Sin ubicar'}</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-xs text-emerald-600 font-black text-lg">${p.precio || '-'}</td>
                     <td class="p-4 text-right space-x-2">
-                        <button onclick="openEditProp('${p.id}')" class="text-blue-500 hover:text-blue-700 p-2"><i class="fas fa-cog"></i></button>
-                        <button onclick="eliminarProp('${p.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash-alt"></i></button>
+                        <button onclick="openEditProp('${p.id}')" class="text-blue-500 hover:text-blue-700 p-2 transition transform hover:scale-110"><i class="fas fa-cog text-lg"></i></button>
+                        <button onclick="eliminarProp('${p.id}')" class="text-red-400 hover:text-red-600 p-2 transition transform hover:scale-110"><i class="fas fa-trash-alt text-lg"></i></button>
                     </td>
                 </tr>`;
             }).join('');
         }
         
-        // --- RESTO DE FUNCIONES (Bandeja, Tab, Dashboard) MANTENIDAS ---
-        function asignarLead(id) {} // Lógica mantenida
-        function renderDashboard() {} // Lógica mantenida
-        function renderWebInbox() {} // Lógica mantenida
+        // --- RESTO DE FUNCIONES (Bandeja, Tab, Dashboard) ---
+        function asignarLead(webLeadId) {
+            const selector = document.getElementById(`select-agent-${webLeadId}`);
+            if (!selector.value) return alert("Seleccione un asesor de ventas.");
+            const btn = event.target; btn.innerHTML = '<span class="loading-spinner"></span>'; btn.disabled = true;
+            const leadRaw = data.webInbox.find(l => l.id == webLeadId);
+            const prop = data.props.find(p => p.nombre.toLowerCase().includes(leadRaw.emprendimiento.toLowerCase())) || data.props[0];
+            const nuevoLead = { id: crypto.randomUUID(), nombre: leadRaw.nombre, telefono: leadRaw.telefono, origen: 'Captación Web', prop_id: prop ? prop.id : 'p1', agente_id: selector.value, estado: 'No Contactado', fecha_ingreso: new Date().toISOString() };
+            fetch(API.leads, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevoLead) }).then(()=>{
+                data.webInbox = data.webInbox.filter(l => l.id != webLeadId); localStorage.setItem(CONFIG.localStorageKey, JSON.stringify(data.webInbox)); initAdminAsync();
+            }).catch(() => { alert("Error"); btn.innerHTML = 'Asignar'; btn.disabled = false; });
+        }
+        
+        function renderDashboard() {
+            const f = document.getElementById('agent-selector').value;
+            const fL = f !== 'todos' ? data.leads.filter(l => l.agente_id === f) : data.leads;
+            const fC = f !== 'todos' ? data.contactos.filter(c => c.agente_id === f) : data.contactos;
+            const t = fL.length + fC.length;
+            document.getElementById('kpi-total').innerText = t; document.getElementById('kpi-pendientes').innerText = fL.length;
+            document.getElementById('kpi-contactados').innerText = fC.length; document.getElementById('kpi-conversion').innerText = t > 0 ? Math.round((fC.length / t) * 100) + '%' : '0%';
+            const tabla = document.getElementById('table-kpi-agentes');
+            if(data.agentes.length === 0) return tabla.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs">Sin personal asignado en D1.</td></tr>';
+            tabla.innerHTML = data.agentes.map(ag => {
+                const lA = data.leads.filter(l => l.agente_id === ag.id).length; const cA = data.contactos.filter(c => c.agente_id === ag.id).length; const tot = lA + cA;
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${ag.nombre}</td><td class="p-4 text-center ${lA > 5 ? 'text-red-600 font-bold' : 'text-slate-600'}">${lA}</td><td class="p-4 text-center text-green-600 font-bold">${cA}</td><td class="p-4 text-right"><span class="bg-slate-100 text-slate-700 px-2 py-1 border border-slate-200 rounded text-xs font-black">${tot>0?Math.round((cA/tot)*100):0}%</span></td></tr>`;
+            }).join('');
+        }
+
+        function renderWebInbox() {
+            data.webInbox = JSON.parse(localStorage.getItem(CONFIG.localStorageKey)) || [];
+            const badge = document.getElementById('badge-web'); badge.innerText = data.webInbox.length; data.webInbox.length > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+            const tbody = document.getElementById('table-inbox-web');
+            if(data.webInbox.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-slate-400 font-medium bg-slate-50">Bandeja al día. No hay leads en espera.</td></tr>';
+            const ops = data.agentes.map(a => `<option value="${a.id}">${a.nombre}</option>`).join('');
+            tbody.innerHTML = data.webInbox.map(l => `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-4"><div class="font-bold text-slate-800">${l.nombre}</div><div class="text-[10px] text-slate-500 font-medium mt-1"><i class="fas fa-envelope text-slate-400"></i> ${l.email} &nbsp;|&nbsp; <i class="fas fa-phone text-slate-400"></i> ${l.telefono}</div></td><td class="p-4 text-xs font-bold text-blue-600">${l.emprendimiento}</td><td class="p-4"><select id="select-agent-${l.id}" class="w-full border border-slate-300 p-2 rounded-lg text-sm bg-white outline-none focus:border-blue-400"><option value="">-- Seleccionar --</option>${ops}</select></td><td class="p-4 text-right"><button onclick="asignarLead('${l.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition">Derivar a D1</button></td></tr>`).join('');
+        }
+
         function closeModal() { document.getElementById('modal-edit').classList.remove('modal-active'); }
-        function setDbStatus(s) { document.getElementById('db-status-dot').className = `w-2 h-2 rounded-full ${s === 'ok' ? 'bg-green-500' : 'bg-red-500'}`; }
-        function switchTab(t) { ['dashboard', 'web', 'agentes', 'propiedades'].forEach(x => document.getElementById(`view-${x}`).classList.add('hidden')); document.getElementById(`view-${t}`).classList.remove('hidden'); }
+        function setDbStatus(s) { document.getElementById('db-status-dot').className = `w-2 h-2 rounded-full ${s === 'ok' ? 'bg-green-500' : s === 'loading' ? 'bg-yellow-400 animate-pulse' : 'bg-red-500'}`; document.getElementById('db-status-text').innerText = s === 'ok' ? 'D1 Sincronizado' : s === 'loading' ? 'Conectando...' : 'Error de Conexión'; }
+        function switchTab(t) { ['dashboard', 'web', 'agentes', 'propiedades'].forEach(x => document.getElementById(`view-${x}`).classList.add('hidden')); document.getElementById(`view-${t}`).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => { b.classList.remove('bg-slate-800', 'text-blue-400'); b.classList.add('text-slate-300'); }); document.getElementById(`tab-${t}`).classList.add('bg-slate-800', 'text-blue-400'); document.getElementById(`tab-${t}`).classList.remove('text-slate-300'); document.getElementById('view-title').innerText = { dashboard: 'Monitor de Rendimiento', web: 'Asignación de Prospectos', agentes: 'Gestión de Personal', propiedades: 'Catálogo Vigente' }[t]; }
 
         window.addEventListener('DOMContentLoaded', initAdminAsync);
     </script>
