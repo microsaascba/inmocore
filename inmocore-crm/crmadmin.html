@@ -10,7 +10,6 @@
         .loading-spinner { border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 2px solid #fff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Burbujas de Chat */
         .msg-admin { background-color: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .msg-agente { background-color: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
     </style>
@@ -141,10 +140,54 @@
                 </section>
 
                 <section id="view-propiedades" class="hidden space-y-8">
-                     <div class="bg-white p-8 rounded-xl shadow-sm border text-center py-12">
-                        <h3 class="font-bold text-slate-800 text-lg mb-2">Sección Catálogo</h3>
-                        <p class="text-slate-500 text-sm">Gestión de activos mantenida correctamente en el backend. Los scripts internos se encargan de esta sección.</p>
-                     </div>
+                    <div class="bg-white p-8 rounded-xl shadow-sm border">
+                        <h3 class="font-bold text-slate-800 mb-6 border-b pb-4 text-lg">Administrador de Catálogo / CMS Web</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Nombre / Título</label><input id="p-nombre" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Operación</label>
+                                        <select id="p-operacion" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none">
+                                            <option value="Venta">En Venta</option>
+                                            <option value="Alquiler">En Alquiler</option>
+                                            <option value="Desarrollo" selected>Desarrollo / Pozo</option>
+                                        </select>
+                                    </div>
+                                    <div><label class="text-xs font-bold text-slate-500 uppercase">Precio Referencia</label><input id="p-precio" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                </div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Ubicación Breve</label><input id="p-ubicacion" type="text" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none"></div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Subir Imagen Principal</label>
+                                    <input id="p-fotos-file" type="file" accept="image/*" class="w-full mt-1 p-2 rounded-lg border bg-white focus:border-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+                                <div class="flex gap-6 pt-2">
+                                    <label class="flex items-center cursor-pointer"><input type="checkbox" id="p-activo" checked class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"><span class="ml-2 text-sm font-bold text-slate-700">Proyecto Activo (Visible)</span></label>
+                                    <label class="flex items-center cursor-pointer"><input type="checkbox" id="p-destacado" class="w-5 h-5 text-yellow-500 rounded border-gray-300 focus:ring-yellow-500"><span class="ml-2 text-sm font-bold text-slate-700"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacar</span></label>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div><label class="text-xs font-bold text-slate-500 uppercase">Descripción Web</label><textarea id="p-desc" class="w-full mt-1 p-2 rounded-lg border focus:border-blue-500 outline-none h-16"></textarea></div>
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                    <label class="text-xs font-black text-blue-700 uppercase flex justify-between mb-1"><span><i class="fab fa-whatsapp"></i> Script Dinámico WhatsApp</span></label>
+                                    <textarea id="p-script" class="w-full p-2 rounded-lg bg-white border border-blue-300 outline-none h-16 text-sm" placeholder="¡Hola [NOMBRE]!..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end pt-4 border-t"><button id="btn-guardar-prop" onclick="guardarPropiedad()" class="bg-slate-900 text-white px-8 py-2 rounded-lg font-bold hover:bg-slate-800 transition"><i class="fas fa-plus mr-2"></i> Agregar a D1</button></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b font-bold text-slate-700">Catálogo (Control Web)</div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm min-w-max">
+                                <thead class="bg-white border-b text-[10px] text-slate-500 uppercase">
+                                    <tr><th class="p-4 w-20">Foto</th><th class="p-4">Estado</th><th class="p-4">Activo Inmobiliario</th><th class="p-4 text-right">Acciones</th></tr>
+                                </thead>
+                                <tbody id="list-props-admin"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </section>
 
             </div>
@@ -168,7 +211,7 @@
 
     <div id="modal-edit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col border max-h-[90vh]">
-            <div class="p-6 border-b flex justify-between items-center bg-slate-50"><h3 id="modal-title" class="font-bold text-lg uppercase tracking-wide">Editar</h3><button onclick="closeModal()"><i class="fas fa-times text-slate-400 hover:text-slate-700 text-xl"></i></button></div>
+            <div class="p-6 border-b flex justify-between items-center"><h3 id="modal-title" class="font-bold text-lg uppercase tracking-wide">Editar</h3><button onclick="closeModal()"><i class="fas fa-times text-slate-400 hover:text-slate-700 text-xl"></i></button></div>
             <div id="modal-body" class="p-6 space-y-4 overflow-y-auto bg-white"></div>
             <div class="p-6 border-t bg-slate-50 flex justify-end gap-3">
                 <button onclick="closeModal()" class="px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-lg transition">Cancelar</button>
@@ -221,6 +264,29 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden'); document.getElementById('app-container').classList.add('flex');
             initAdminAsync(); 
+        }
+
+        async function procesarImagenBase64(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve('');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        let scale = 1;
+                        if (img.width > MAX_WIDTH) scale = MAX_WIDTH / img.width;
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
         async function initAdminAsync() {
@@ -337,7 +403,7 @@
             catch(e) { alert("Error al enviar mensaje"); }
         }
 
-        // --- AGENTES (EDICIÓN COMPLETA RESTAURADA) ---
+        // --- AGENTES ---
         async function guardarAgente() {
             const btn = document.getElementById('btn-guardar-agente');
             const ag = { 
@@ -363,61 +429,112 @@
         function openEditAgente(id) {
             const ag = data.agentes.find(a => a.id === id);
             document.getElementById('modal-title').innerText = `Modificar: ${ag.nombre}`;
-            
-            // Modal expandido con todos los datos
             document.getElementById('modal-body').innerHTML = `
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2"><label class="text-[10px] font-bold text-slate-500 uppercase">Nombre Completo</label><input id="e-ag-nombre" type="text" value="${ag.nombre}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
-                    
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Teléfono</label><input id="e-ag-tel" type="text" value="${ag.telefono || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Email</label><input id="e-ag-email" type="email" value="${ag.email || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
-                    
                     <div class="col-span-2"><label class="text-[10px] font-bold text-slate-500 uppercase">Dirección</label><input id="e-ag-dir" type="text" value="${ag.direccion || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
-                    
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Ciudad</label><input id="e-ag-ciudad" type="text" value="${ag.ciudad || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Provincia</label><input id="e-ag-prov" type="text" value="${ag.provincia || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
-                    
                     <div class="col-span-2 border-t pt-4 mt-2"><p class="text-xs font-black text-slate-700 mb-2">Datos de Acceso (Login)</p></div>
-                    
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Usuario</label><input id="e-ag-usuario" type="text" value="${ag.usuario || ''}" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
                     <div><label class="text-[10px] font-bold text-slate-500 uppercase">Nueva Contraseña</label><input id="e-ag-pass" type="password" placeholder="Vacío = No cambiar" class="w-full border p-2.5 rounded-lg bg-slate-50 outline-none focus:border-blue-500"></div>
                 </div>
             `;
             document.getElementById('modal-save-btn').onclick = () => salvarAgente(id);
-            document.getElementById('modal-edit').classList.remove('hidden');
-            document.getElementById('modal-edit').classList.add('flex');
+            document.getElementById('modal-edit').classList.remove('hidden'); document.getElementById('modal-edit').classList.add('flex');
         }
 
         async function salvarAgente(id) {
             const btn = document.getElementById('modal-save-btn');
+            const update = { nombre: document.getElementById('e-ag-nombre').value, telefono: document.getElementById('e-ag-tel').value, email: document.getElementById('e-ag-email').value, direccion: document.getElementById('e-ag-dir').value, ciudad: document.getElementById('e-ag-ciudad').value, provincia: document.getElementById('e-ag-prov').value, usuario: document.getElementById('e-ag-usuario').value };
+            const pass = document.getElementById('e-ag-pass').value; if(pass) update.password_hash = pass;
+            btn.innerHTML = '<span class="loading-spinner"></span> Guardando...'; btn.disabled = true;
+            try { await fetch(`${API.agentes}?id=${id}`, { method: 'PUT', body: JSON.stringify(update) }); closeModal(); initAdminAsync(); } 
+            catch(e) { alert("Error de conexión"); } finally { btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; }
+        }
+
+        // --- PROPIEDADES (CMS WEB) ---
+        async function guardarPropiedad() {
+            const btn = document.getElementById('btn-guardar-prop');
+            const fileInput = document.getElementById('p-fotos-file');
+            if(!document.getElementById('p-nombre').value) return alert("El nombre es obligatorio");
             
-            const update = {
-                nombre: document.getElementById('e-ag-nombre').value,
-                telefono: document.getElementById('e-ag-tel').value,
-                email: document.getElementById('e-ag-email').value,
-                direccion: document.getElementById('e-ag-dir').value,
-                ciudad: document.getElementById('e-ag-ciudad').value,
-                provincia: document.getElementById('e-ag-prov').value,
-                usuario: document.getElementById('e-ag-usuario').value
+            btn.innerHTML = '<span class="loading-spinner"></span> Subiendo...'; btn.disabled = true;
+            let imagenBase64 = '';
+            if (fileInput.files.length > 0) imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
+
+            const p = { 
+                id: crypto.randomUUID(), nombre: document.getElementById('p-nombre').value, precio: document.getElementById('p-precio').value, 
+                ubicacion: document.getElementById('p-ubicacion').value, operacion: document.getElementById('p-operacion').value, fotos: imagenBase64,
+                descripcion: document.getElementById('p-desc').value, script_wa: document.getElementById('p-script').value,
+                activo: document.getElementById('p-activo').checked, destacado: document.getElementById('p-destacado').checked
             };
             
-            const pass = document.getElementById('e-ag-pass').value;
-            if(pass) update.password_hash = pass; // Solo envía si escribió algo nuevo
+            await fetch(API.props, { method: 'POST', body: JSON.stringify(p) });
+            ['p-nombre','p-precio','p-ubicacion','p-desc','p-script'].forEach(i => document.getElementById(i).value=''); fileInput.value = '';
+            btn.innerHTML = '<i class="fas fa-plus mr-2"></i> Agregar a D1'; btn.disabled = false; initAdminAsync();
+        }
 
+        async function eliminarProp(id) { if(confirm("¿Retirar del sistema definitivamente?")) { await fetch(`${API.props}?id=${id}`, { method: 'DELETE' }); initAdminAsync(); } }
+
+        function openEditProp(id) {
+            const p = data.props.find(x => x.id === id);
+            const isActivo = p.activo !== 0 ? 'checked' : ''; const isDestacado = p.destacado === 1 ? 'checked' : ''; const op = p.operacion || 'Desarrollo';
+
+            document.getElementById('modal-title').innerText = `Editar: ${p.nombre}`;
+            document.getElementById('modal-body').innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 flex gap-6 bg-white p-4 rounded-xl border mb-2 shadow-sm">
+                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-activo" ${isActivo} class="w-5 h-5 text-blue-600 rounded"><span class="ml-2 text-sm font-bold">Visible en Web</span></label>
+                        <label class="flex items-center cursor-pointer"><input type="checkbox" id="ep-destacado" ${isDestacado} class="w-5 h-5 text-yellow-500 rounded"><span class="ml-2 text-sm font-bold"><i class="fas fa-star text-yellow-400 mr-1"></i>Destacado</span></label>
+                    </div>
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Nombre</label><input id="ep-nombre" type="text" value="${p.nombre}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-500">Operación</label>
+                        <select id="ep-operacion" class="w-full border p-2.5 rounded-lg outline-none bg-white focus:border-blue-500">
+                            <option value="Venta" ${op==='Venta'?'selected':''}>En Venta</option>
+                            <option value="Alquiler" ${op==='Alquiler'?'selected':''}>En Alquiler</option>
+                            <option value="Desarrollo" ${op==='Desarrollo'?'selected':''}>Desarrollo / Pozo</option>
+                        </select>
+                    </div>
+                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Precio</label><input id="ep-precio" type="text" value="${p.precio || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Ubicación</label><input id="ep-ubi" type="text" value="${p.ubicacion || ''}" class="w-full border p-2.5 rounded-lg outline-none focus:border-blue-500"></div>
+                    <div class="col-span-2 bg-slate-100 p-4 rounded-xl border">
+                        <label class="text-[10px] font-bold uppercase text-slate-500 block mb-2">Cambiar Imagen (Dejar vacío para mantener la actual)</label>
+                        <input id="ep-fotos-file" type="file" accept="image/*" class="w-full bg-white border p-2 rounded-lg outline-none file:text-xs">
+                        <input type="hidden" id="ep-foto-actual" value="${p.fotos || ''}">
+                    </div>
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Descripción Web</label><textarea id="ep-desc" class="w-full border p-2.5 rounded-lg outline-none h-20 focus:border-blue-500">${p.descripcion || ''}</textarea></div>
+                    <div class="col-span-2"><label class="text-[10px] font-bold uppercase text-slate-500">Script WhatsApp</label><textarea id="ep-script" class="w-full border p-2.5 rounded-lg outline-none h-16 focus:border-blue-500">${p.script_wa || ''}</textarea></div>
+                </div>
+            `;
+            document.getElementById('modal-save-btn').onclick = () => salvarProp(id);
+            document.getElementById('modal-edit').classList.remove('hidden'); document.getElementById('modal-edit').classList.add('flex');
+        }
+
+        async function salvarProp(id) {
+            const btn = document.getElementById('modal-save-btn');
             btn.innerHTML = '<span class="loading-spinner"></span> Guardando...'; btn.disabled = true;
-            try { 
-                await fetch(`${API.agentes}?id=${id}`, { method: 'PUT', body: JSON.stringify(update) }); 
-                closeModal(); 
-                initAdminAsync(); 
-            } catch(e) {
-                alert("Error de conexión");
-            } finally {
-                btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
-            }
+
+            const fileInput = document.getElementById('ep-fotos-file');
+            let imagenBase64 = document.getElementById('ep-foto-actual').value;
+            if (fileInput.files.length > 0) imagenBase64 = await procesarImagenBase64(fileInput.files[0]);
+
+            const up = {
+                nombre: document.getElementById('ep-nombre').value, precio: document.getElementById('ep-precio').value,
+                ubicacion: document.getElementById('ep-ubi').value, operacion: document.getElementById('ep-operacion').value,
+                script_wa: document.getElementById('ep-script').value, descripcion: document.getElementById('ep-desc').value,
+                fotos: imagenBase64, activo: document.getElementById('ep-activo').checked, destacado: document.getElementById('ep-destacado').checked
+            };
+            
+            await fetch(`${API.props}?id=${id}`, { method: 'PUT', body: JSON.stringify(up) });
+            btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; closeModal(); initAdminAsync();
         }
 
         // --- RENDERIZADOS ---
-        function renderAll() { renderAgentes(); renderDashboard(); renderWebInbox(); renderCRMGlobal(); }
+        function renderAll() { renderAgentes(); renderProps(); renderDashboard(); renderWebInbox(); renderCRMGlobal(); }
 
         function renderAgentes() {
             const sel = document.getElementById('agent-selector');
@@ -439,6 +556,17 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function renderProps() {
+            document.getElementById('list-props-admin').innerHTML = data.props.map(p => {
+                const statusBadge = p.activo !== 0 ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold shadow-sm">Activo</span>' : '<span class="bg-slate-200 text-slate-500 px-2 py-1 rounded text-xs font-bold shadow-sm">Inactivo</span>';
+                const starIcon = p.destacado === 1 ? '<i class="fas fa-star text-yellow-500 ml-2" title="Destacado en Web"></i>' : '';
+                let opColor = 'bg-slate-600'; if(p.operacion === 'Venta') opColor = 'bg-blue-600'; if(p.operacion === 'Alquiler') opColor = 'bg-emerald-600'; if(p.operacion === 'Desarrollo') opColor = 'bg-purple-600';
+                const thumb = (p.fotos && p.fotos.length > 10) ? `<img src="${p.fotos}" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200">` : `<div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 border border-slate-200"><i class="fas fa-image"></i></div>`;
+
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition"><td class="p-4">${thumb}</td><td class="p-4">${statusBadge}</td><td class="p-4"><div class="font-bold text-slate-800 text-base">${p.nombre} ${starIcon}</div><div class="flex items-center gap-2 mt-1"><span class="${opColor} text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${p.operacion || 'Desarrollo'}</span><span class="text-xs text-slate-500"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>${p.ubicacion || 'Sin ubicar'}</span></div></td><td class="p-4 text-xs text-emerald-600 font-black text-lg">${p.precio || '-'}</td><td class="p-4 text-right space-x-2"><button onclick="openEditProp('${p.id}')" class="text-blue-500 hover:text-blue-700 p-2 transition transform hover:scale-110"><i class="fas fa-cog text-lg"></i></button><button onclick="eliminarProp('${p.id}')" class="text-red-400 hover:text-red-600 p-2 transition transform hover:scale-110"><i class="fas fa-trash-alt text-lg"></i></button></td></tr>`;
+            }).join('');
         }
 
         function renderDashboard() {
