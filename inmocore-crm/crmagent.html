@@ -29,6 +29,7 @@
     </div>
 
     <div id="app-container" class="hidden w-full h-full overflow-hidden">
+        
         <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 shrink-0">
             <div class="p-6 border-b border-slate-800 text-center"><h1 class="text-3xl font-black tracking-tight">Inmo<span class="text-blue-500 font-light">Core</span></h1><p id="agente-name-display" class="text-[11px] text-blue-400 uppercase tracking-widest mt-2 font-bold"></p></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
@@ -36,6 +37,7 @@
                 <button onclick="switchTab('leads')" id="tab-leads" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300 relative"><i class="fas fa-bell w-6 text-center"></i> Nuevos Leads <span id="badge-leads" class="absolute right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span></button>
                 <button onclick="switchTab('cartera')" id="tab-cartera" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-address-book w-6 text-center"></i> Mi Cartera</button>
                 <button onclick="switchTab('catalogo')" id="tab-catalogo" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-building w-6 text-center"></i> Catálogo Activos</button>
+                
                 <div class="pt-6 mt-6 border-t border-slate-800">
                     <button onclick="abrirChatAdmin()" class="w-full flex items-center p-3 rounded-lg hover:bg-blue-900/50 transition text-blue-400 hover:text-blue-300 font-bold mb-2"><i class="fas fa-headset w-6 text-center"></i> Soporte Gerencia</button>
                     <button onclick="logoutAgente()" class="w-full flex items-center p-3 rounded-lg hover:bg-red-500/10 transition text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión</button>
@@ -157,26 +159,23 @@
             document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); document.getElementById('app-container').classList.add('flex');
             document.getElementById('agente-name-display').innerText = currentAgent.nombre;
             initAgenteAsync();
-            // INICIA EL AUTO-OPEN DEL CHAT
             silentPollInterval = setInterval(checkNotificacionesSilenciosas, 3000);
         }
 
         // --- SISTEMA DE AUTO-APERTURA DE CHAT ---
         async function checkNotificacionesSilenciosas() {
             if(!currentAgent) return;
-            // Si ya está abierto, no hacemos nada (el chatInterval se encarga)
             if(!document.getElementById('chat-widget').classList.contains('hidden')) return;
 
             try {
                 const res = await fetch(`${API.chat}?u1=${currentAgent.id}&u2=admin`);
                 const mensajes = await res.json();
                 
-                if (lastMsgCount === 0) { lastMsgCount = mensajes.length; return; } // Carga inicial
+                if (lastMsgCount === 0) { lastMsgCount = mensajes.length; return; } 
 
                 if (mensajes.length > lastMsgCount) {
                     lastMsgCount = mensajes.length;
                     const ultimoMsj = mensajes[mensajes.length - 1];
-                    // Si el admin nos escribió, abrimos la ventana
                     if (ultimoMsj.remitente === 'admin') abrirChatAdmin();
                 }
             } catch(e) {}
@@ -195,7 +194,8 @@
 
         // --- RENDERIZADOS ---
         function renderAll() { renderDashboard(); renderNuevosLeads(); renderCartera(); renderCatalogo(); }
-        function renderDashboard() { /* Omitido por espacio, funciona igual */
+        
+        function renderDashboard() {
             const pendientes = misLeads.filter(l => l.estado === 'No Contactado').length;
             document.getElementById('kpi-total').innerText = misLeads.length;
             document.getElementById('kpi-pendientes').innerText = pendientes;
@@ -234,7 +234,7 @@
             }).join('');
         }
 
-        // --- GESTIÓN DE LEADS (NOTAS CORREGIDAS) ---
+        // --- GESTIÓN DE LEADS (NOTAS) ---
         function abrirGestionLead(id) {
             const lead = misLeads.find(l => l.id === id);
             if(!lead) return;
@@ -272,7 +272,6 @@
             const btn = document.getElementById('btn-guardar-gestion'); btn.innerHTML = '<span class="loading-spinner"></span>...'; btn.disabled = true;
             const lead = misLeads.find(l => l.id === leadEditandoId); const nuevoEstado = document.getElementById('modal-lead-estado').value;
             try {
-                // AHORA SÍ ENVIAMOS LAS NOTAS A LA API
                 await fetch(`${API.leads}?id=${leadEditandoId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: nuevoEstado, notas: lead.notas || [] }) });
                 lead.estado = nuevoEstado; cerrarModalGestion(); renderDashboard(); renderNuevosLeads(); renderCartera();
             } catch(e) { alert("Error guardando en D1"); } 
@@ -286,7 +285,7 @@
 
         // --- CHAT CON ADMIN ---
         function abrirChatAdmin() {
-            lastMsgCount = 0; // Reseteamos para que lea los viejos al abrir
+            lastMsgCount = 0; 
             document.getElementById('chat-widget').classList.remove('hidden'); document.getElementById('chat-widget').classList.add('flex');
             cargarMensajesChat(); if(chatInterval) clearInterval(chatInterval); chatInterval = setInterval(cargarMensajesChat, 3000);
         }
@@ -297,7 +296,7 @@
             if(!currentAgent) return;
             try {
                 const res = await fetch(`${API.chat}?u1=${currentAgent.id}&u2=admin`); const mensajes = await res.json();
-                lastMsgCount = mensajes.length; // Actualizamos el contador del escáner silencioso
+                lastMsgCount = mensajes.length; 
                 const container = document.getElementById('chat-messages');
                 container.innerHTML = mensajes.map(m => { const soyYo = m.remitente === currentAgent.id; return `<div class="max-w-[85%] p-2.5 rounded-2xl shadow-sm text-[13px] relative ${soyYo ? 'msg-agente' : 'msg-admin'}"><p class="leading-snug">${m.mensaje}</p><p class="text-[9px] mt-1 text-right opacity-70">${new Date(m.fecha).toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'})}</p></div>`; }).join('');
                 container.scrollTop = container.scrollHeight;
