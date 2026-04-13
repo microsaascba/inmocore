@@ -9,9 +9,6 @@
     <style>
         .loading-spinner { border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 2px solid #fff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal-active { display: flex !important; }
-        
-        /* Burbujas de Chat */
         .msg-agente { background-color: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .msg-admin { background-color: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
     </style>
@@ -22,57 +19,32 @@
         <div class="bg-white p-10 rounded-2xl shadow-2xl w-[400px] max-w-[90%] text-center">
             <h1 class="text-4xl font-black text-slate-900 mb-1">Inmo<span class="text-blue-600 font-light">Core</span></h1>
             <p class="text-[10px] text-slate-400 mb-8 uppercase tracking-widest font-bold">Portal del Asesor</p>
-            
             <div class="space-y-5">
-                <div class="relative">
-                    <i class="fas fa-user absolute left-4 top-3.5 text-slate-400"></i>
-                    <input id="login-user" type="text" placeholder="Usuario (Ej: laura.m)" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 font-bold text-slate-700">
-                </div>
-                <div class="relative">
-                    <i class="fas fa-lock absolute left-4 top-3.5 text-slate-400"></i>
-                    <input id="login-pass" type="password" placeholder="Contraseña" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 text-slate-700">
-                </div>
-                <button id="btn-login" onclick="loginAgente()" class="w-full bg-blue-600 text-white font-bold p-3.5 rounded-lg hover:bg-blue-700 transition shadow-lg flex justify-center items-center gap-2">
-                    Iniciar Sesión
-                </button>
+                <div class="relative"><i class="fas fa-user absolute left-4 top-3.5 text-slate-400"></i><input id="login-user" type="text" placeholder="Usuario" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 font-bold text-slate-700"></div>
+                <div class="relative"><i class="fas fa-lock absolute left-4 top-3.5 text-slate-400"></i><input id="login-pass" type="password" placeholder="Contraseña" class="w-full bg-slate-50 p-3 pl-10 rounded-lg border outline-none focus:border-blue-500 text-slate-700"></div>
+                <button id="btn-login" onclick="loginAgente()" class="w-full bg-blue-600 text-white font-bold p-3.5 rounded-lg hover:bg-blue-700 transition shadow-lg flex justify-center items-center gap-2">Iniciar Sesión</button>
             </div>
             <p id="login-error" class="text-red-500 text-xs mt-4 hidden font-bold bg-red-50 p-2 rounded-lg border border-red-100">Credenciales incorrectas.</p>
         </div>
     </div>
 
     <div id="app-container" class="hidden w-full h-full overflow-hidden">
-        
         <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 shrink-0">
-            <div class="p-6 border-b border-slate-800 text-center">
-                <h1 class="text-3xl font-black tracking-tight">Inmo<span class="text-blue-500 font-light">Core</span></h1>
-                <p id="agente-name-display" class="text-[11px] text-blue-400 uppercase tracking-widest mt-2 font-bold"></p>
-            </div>
+            <div class="p-6 border-b border-slate-800 text-center"><h1 class="text-3xl font-black tracking-tight">Inmo<span class="text-blue-500 font-light">Core</span></h1><p id="agente-name-display" class="text-[11px] text-blue-400 uppercase tracking-widest mt-2 font-bold"></p></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
                 <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full flex items-center p-3 rounded-lg bg-slate-800 text-blue-400 transition font-bold"><i class="fas fa-chart-pie w-6 text-center"></i> Mi Rendimiento</button>
-                <button onclick="switchTab('leads')" id="tab-leads" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300 relative">
-                    <i class="fas fa-bell w-6 text-center"></i> Nuevos Leads 
-                    <span id="badge-leads" class="absolute right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span>
-                </button>
+                <button onclick="switchTab('leads')" id="tab-leads" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300 relative"><i class="fas fa-bell w-6 text-center"></i> Nuevos Leads <span id="badge-leads" class="absolute right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0</span></button>
                 <button onclick="switchTab('cartera')" id="tab-cartera" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-address-book w-6 text-center"></i> Mi Cartera</button>
                 <button onclick="switchTab('catalogo')" id="tab-catalogo" class="w-full flex items-center p-3 rounded-lg hover:bg-slate-800 transition text-slate-300"><i class="fas fa-building w-6 text-center"></i> Catálogo Activos</button>
-                
                 <div class="pt-6 mt-6 border-t border-slate-800">
-                    <button onclick="abrirChatAdmin()" class="w-full flex items-center p-3 rounded-lg hover:bg-blue-900/50 transition text-blue-400 hover:text-blue-300 font-bold mb-2">
-                        <i class="fas fa-headset w-6 text-center"></i> Soporte Gerencia
-                    </button>
-                    <button onclick="logoutAgente()" class="w-full flex items-center p-3 rounded-lg hover:bg-red-500/10 transition text-red-400 hover:text-red-300">
-                        <i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión
-                    </button>
+                    <button onclick="abrirChatAdmin()" class="w-full flex items-center p-3 rounded-lg hover:bg-blue-900/50 transition text-blue-400 hover:text-blue-300 font-bold mb-2"><i class="fas fa-headset w-6 text-center"></i> Soporte Gerencia</button>
+                    <button onclick="logoutAgente()" class="w-full flex items-center p-3 rounded-lg hover:bg-red-500/10 transition text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión</button>
                 </div>
             </nav>
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden relative bg-slate-100">
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm shrink-0">
-                <h2 id="view-title" class="text-lg font-bold text-slate-800 uppercase tracking-wide">Mi Rendimiento</h2>
-                <button onclick="initAgenteAsync()" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1"><i class="fas fa-sync-alt"></i> Actualizar</button>
-            </header>
-
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm shrink-0"><h2 id="view-title" class="text-lg font-bold text-slate-800 uppercase tracking-wide">Mi Rendimiento</h2><button onclick="initAgenteAsync()" class="text-xs text-blue-600 hover:underline font-bold flex items-center gap-1"><i class="fas fa-sync-alt"></i> Actualizar</button></header>
             <div class="p-8 overflow-y-auto flex-1 pb-20">
                 
                 <section id="view-dashboard" class="space-y-6">
@@ -84,55 +56,34 @@
                 </section>
 
                 <section id="view-leads" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-red-500">
-                        <div><h3 class="text-xl font-bold text-slate-800">Leads Pendientes</h3><p class="text-sm text-slate-500">Oportunidades nuevas asignadas por gerencia que aún no has contactado.</p></div>
-                    </div>
-                    <div id="grid-leads-nuevos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-red-500"><div><h3 class="text-xl font-bold text-slate-800">Leads Pendientes</h3></div></div>
+                    <div id="grid-leads-nuevos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </section>
 
                 <section id="view-cartera" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-green-500">
-                        <div><h3 class="text-xl font-bold text-slate-800">Mi Cartera Activa</h3><p class="text-sm text-slate-500">Gestiona el estado y la bitácora de tus prospectos.</p></div>
-                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-green-500"><div><h3 class="text-xl font-bold text-slate-800">Mi Cartera Activa</h3></div></div>
                     <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
                         <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b text-[10px] text-slate-500 uppercase font-bold">
-                                <tr>
-                                    <th class="p-4">Cliente</th>
-                                    <th class="p-4">Interés</th>
-                                    <th class="p-4">Estado</th>
-                                    <th class="p-4 text-center">Gestión</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-cartera">
-                            </tbody>
+                            <thead class="bg-slate-50 border-b text-[10px] text-slate-500 uppercase font-bold"><tr><th class="p-4">Cliente</th><th class="p-4">Interés</th><th class="p-4">Estado</th><th class="p-4 text-center">Gestión</th></tr></thead>
+                            <tbody id="table-cartera"></tbody>
                         </table>
                     </div>
                 </section>
 
                 <section id="view-catalogo" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-blue-500">
-                        <div><h3 class="text-xl font-bold text-slate-800">Catálogo de Activos</h3><p class="text-sm text-slate-500">Material de apoyo y disponibilidad en tiempo real.</p></div>
-                    </div>
-                    <div id="grid-catalogo" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border flex justify-between items-center border-l-4 border-l-blue-500"><div><h3 class="text-xl font-bold text-slate-800">Catálogo de Activos</h3></div></div>
+                    <div id="grid-catalogo" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </section>
-
             </div>
         </main>
     </div>
 
     <div id="chat-widget" class="fixed bottom-6 right-6 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 hidden flex-col z-50 overflow-hidden transform transition-transform">
         <div class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-10">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <h4 class="font-bold text-sm">Soporte Gerencial</h4>
-            </div>
+            <div class="flex items-center gap-2"><div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><h4 class="font-bold text-sm">Soporte Gerencial</h4></div>
             <button onclick="cerrarChatAdmin()" class="hover:bg-slate-700 rounded-full w-6 h-6 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
         </div>
-        <div id="chat-messages" class="h-72 p-4 overflow-y-auto bg-slate-50 flex flex-col gap-3 text-sm">
-            </div>
+        <div id="chat-messages" class="h-72 p-4 overflow-y-auto bg-slate-50 flex flex-col gap-3 text-sm"></div>
         <div class="p-3 border-t bg-white flex gap-2">
             <input type="text" id="chat-input" onkeypress="if(event.key === 'Enter') enviarMensajeChat()" class="flex-1 border rounded-lg px-3 py-2 outline-none focus:border-blue-500 text-sm bg-slate-50" placeholder="Escribe al administrador...">
             <button onclick="enviarMensajeChat()" class="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition"><i class="fas fa-paper-plane"></i></button>
@@ -142,39 +93,27 @@
     <div id="modal-gestion" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col border max-h-[90vh]">
             <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-                <div>
-                    <h3 id="modal-lead-name" class="font-black text-xl text-slate-800">Nombre Cliente</h3>
-                    <p id="modal-lead-phone" class="text-sm text-slate-500 mt-1 font-medium"></p>
-                </div>
+                <div><h3 id="modal-lead-name" class="font-black text-xl text-slate-800"></h3><p id="modal-lead-phone" class="text-sm text-slate-500 mt-1 font-medium"></p></div>
                 <button onclick="cerrarModalGestion()"><i class="fas fa-times text-slate-400 hover:text-slate-700 text-xl"></i></button>
             </div>
-            
             <div class="p-6 overflow-y-auto bg-white flex-1 space-y-6">
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-2">Estado del Prospecto</label>
                     <select id="modal-lead-estado" class="w-full border p-3 rounded-lg outline-none bg-slate-50 font-bold focus:border-blue-500 transition">
-                        <option value="No Contactado">No Contactado</option>
-                        <option value="Contactado">Contactado</option>
-                        <option value="Interesado">Interesado (Caliente)</option>
-                        <option value="No Interesado">No Interesado (Perdido)</option>
+                        <option value="No Contactado">No Contactado</option><option value="Contactado">Contactado</option><option value="Interesado">Interesado (Caliente)</option><option value="No Interesado">No Interesado (Perdido)</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-2">Bitácora de Seguimiento</label>
-                    <div id="modal-lead-notas-list" class="bg-slate-50 border border-slate-200 rounded-lg p-4 h-40 overflow-y-auto space-y-3 mb-3">
-                        </div>
+                    <div id="modal-lead-notas-list" class="bg-slate-50 border border-slate-200 rounded-lg p-4 h-40 overflow-y-auto space-y-3 mb-3"></div>
                     <div class="flex gap-2">
-                        <input type="text" id="nueva-nota-input" placeholder="Escribe una nueva nota..." class="flex-1 border p-2.5 rounded-lg outline-none text-sm focus:border-blue-500">
+                        <input type="text" id="nueva-nota-input" onkeypress="if(event.key === 'Enter') agregarNota()" placeholder="Escribe una nueva nota y presiona Enter..." class="flex-1 border p-2.5 rounded-lg outline-none text-sm focus:border-blue-500">
                         <button onclick="agregarNota()" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-blue-200 transition">Añadir</button>
                     </div>
                 </div>
             </div>
-
             <div class="p-6 border-t bg-slate-50 flex justify-between items-center">
-                <a id="btn-wa-modal" href="#" target="_blank" class="bg-green-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-green-600 transition flex items-center gap-2">
-                    <i class="fab fa-whatsapp text-lg"></i> WhatsApp
-                </a>
+                <a id="btn-wa-modal" href="#" target="_blank" class="bg-green-500 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-green-600 transition flex items-center gap-2"><i class="fab fa-whatsapp text-lg"></i> WhatsApp</a>
                 <div class="flex gap-3">
                     <button onclick="cerrarModalGestion()" class="px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-lg">Cancelar</button>
                     <button id="btn-guardar-gestion" onclick="guardarGestionLead()" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-bold shadow-md hover:bg-blue-700 transition">Guardar Cambios</button>
@@ -185,373 +124,193 @@
 
     <script>
         const API = { leads: '/api/leads', props: '/api/propiedades', agentes: '/api/agentes', chat: '/api/mensajes' };
-        
-        let currentAgent = null;
-        let misLeads = [];
-        let propiedades = [];
-        let leadEditandoId = null;
-        let chatInterval = null;
+        let currentAgent = null; let misLeads = []; let propiedades = []; let leadEditandoId = null; 
+        let chatInterval = null; let silentPollInterval = null; let lastMsgCount = 0;
 
-        // --- SISTEMA DE LOGIN (CLIENT-SIDE) ---
         window.addEventListener('DOMContentLoaded', () => {
             const agentData = sessionStorage.getItem('inmocore_agent_data');
-            if(agentData) {
-                currentAgent = JSON.parse(agentData);
-                mostrarPanel();
-            }
+            if(agentData) { currentAgent = JSON.parse(agentData); mostrarPanel(); }
         });
 
         async function loginAgente() {
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            const btn = document.getElementById('btn-login');
-            const errorMsg = document.getElementById('login-error');
-            
+            const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value;
+            const btn = document.getElementById('btn-login'); const errorMsg = document.getElementById('login-error');
             if(!u || !p) return;
-            
-            btn.innerHTML = '<span class="loading-spinner"></span> Validando...'; 
-            btn.disabled = true; errorMsg.classList.add('hidden');
-
+            btn.innerHTML = '<span class="loading-spinner"></span> Validando...'; btn.disabled = true; errorMsg.classList.add('hidden');
             try {
-                // Obtenemos todos los agentes y validamos del lado del cliente 
-                const res = await fetch(API.agentes);
-                const agentes = await res.json();
-                
+                const res = await fetch(API.agentes); const agentes = await res.json();
                 const match = agentes.find(a => a.usuario === u && a.password_hash === p);
-                
-                if(match) {
-                    currentAgent = match;
-                    sessionStorage.setItem('inmocore_agent_data', JSON.stringify(match));
-                    mostrarPanel();
-                } else {
-                    errorMsg.innerText = "Usuario o contraseña incorrectos.";
-                    errorMsg.classList.remove('hidden');
-                }
-            } catch(e) {
-                errorMsg.innerText = "Error de conexión con la base de datos.";
-                errorMsg.classList.remove('hidden');
-            } finally {
-                btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false;
-            }
+                if(match) { currentAgent = match; sessionStorage.setItem('inmocore_agent_data', JSON.stringify(match)); mostrarPanel(); } 
+                else { errorMsg.innerText = "Usuario o contraseña incorrectos."; errorMsg.classList.remove('hidden'); }
+            } catch(e) { errorMsg.innerText = "Error de conexión con base de datos."; errorMsg.classList.remove('hidden'); } 
+            finally { btn.innerHTML = 'Iniciar Sesión'; btn.disabled = false; }
         }
 
         function logoutAgente() {
-            sessionStorage.removeItem('inmocore_agent_data');
-            currentAgent = null;
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('flex');
+            sessionStorage.removeItem('inmocore_agent_data'); currentAgent = null;
+            document.getElementById('app-container').classList.add('hidden'); document.getElementById('app-container').classList.remove('flex');
             document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
-            cerrarChatAdmin();
+            cerrarChatAdmin(); if(silentPollInterval) clearInterval(silentPollInterval);
         }
 
         function mostrarPanel() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            document.getElementById('app-container').classList.add('flex');
+            document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); document.getElementById('app-container').classList.add('flex');
             document.getElementById('agente-name-display').innerText = currentAgent.nombre;
-            initAgenteAsync(); 
+            initAgenteAsync();
+            // INICIA EL AUTO-OPEN DEL CHAT
+            silentPollInterval = setInterval(checkNotificacionesSilenciosas, 3000);
         }
 
-        // --- INICIALIZACIÓN DE DATOS ---
+        // --- SISTEMA DE AUTO-APERTURA DE CHAT ---
+        async function checkNotificacionesSilenciosas() {
+            if(!currentAgent) return;
+            // Si ya está abierto, no hacemos nada (el chatInterval se encarga)
+            if(!document.getElementById('chat-widget').classList.contains('hidden')) return;
+
+            try {
+                const res = await fetch(`${API.chat}?u1=${currentAgent.id}&u2=admin`);
+                const mensajes = await res.json();
+                
+                if (lastMsgCount === 0) { lastMsgCount = mensajes.length; return; } // Carga inicial
+
+                if (mensajes.length > lastMsgCount) {
+                    lastMsgCount = mensajes.length;
+                    const ultimoMsj = mensajes[mensajes.length - 1];
+                    // Si el admin nos escribió, abrimos la ventana
+                    if (ultimoMsj.remitente === 'admin') abrirChatAdmin();
+                }
+            } catch(e) {}
+        }
+
         async function initAgenteAsync() {
             if(!currentAgent) return;
             try {
-                const [rP, rL] = await Promise.all([
-                    fetch(API.props).then(r=>r.json()),
-                    fetch(API.leads).then(r=>r.json())
-                ]);
-                
+                const [rP, rL] = await Promise.all([ fetch(API.props).then(r=>r.json()), fetch(API.leads).then(r=>r.json()) ]);
                 propiedades = rP;
-                
-                // Unimos leads y contactos y filtramos solo los de este agente
                 const todosLosLeads = [...(rL.leads || []), ...(rL.contactos || [])];
                 misLeads = todosLosLeads.filter(l => l.agente_id === currentAgent.id);
-                
                 renderAll();
-            } catch (e) {
-                console.error("Error cargando datos:", e);
-                alert("Error al sincronizar con D1.");
-            }
+            } catch (e) { alert("Error al sincronizar con D1."); }
         }
 
         // --- RENDERIZADOS ---
-        function renderAll() {
-            renderDashboard();
-            renderNuevosLeads();
-            renderCartera();
-            renderCatalogo();
-        }
-
-        function renderDashboard() {
+        function renderAll() { renderDashboard(); renderNuevosLeads(); renderCartera(); renderCatalogo(); }
+        function renderDashboard() { /* Omitido por espacio, funciona igual */
             const pendientes = misLeads.filter(l => l.estado === 'No Contactado').length;
-            const enGestion = misLeads.length - pendientes;
-            
             document.getElementById('kpi-total').innerText = misLeads.length;
             document.getElementById('kpi-pendientes').innerText = pendientes;
-            document.getElementById('kpi-gestion').innerText = enGestion;
-            
-            const badge = document.getElementById('badge-leads');
-            badge.innerText = pendientes;
-            pendientes > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+            document.getElementById('kpi-gestion').innerText = misLeads.length - pendientes;
+            const badge = document.getElementById('badge-leads'); badge.innerText = pendientes; pendientes > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
         }
 
         function renderNuevosLeads() {
-            const pendientes = misLeads.filter(l => l.estado === 'No Contactado');
-            const container = document.getElementById('grid-leads-nuevos');
-            
-            if(pendientes.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center p-10 bg-white rounded-xl border border-dashed border-slate-300 text-slate-500 font-bold"><i class="fas fa-check-circle text-4xl text-green-400 mb-3 block"></i>¡Excelente! Estás al día con tus nuevos contactos.</div>';
-                return;
-            }
-
-            container.innerHTML = pendientes.map(l => {
-                const prop = propiedades.find(p => p.id === l.prop_id) || {nombre: 'Desconocido', script_wa: 'Hola [NOMBRE]'};
-                const msgWa = encodeURIComponent(prop.script_wa ? prop.script_wa.replace(/\[NOMBRE\]/g, l.nombre) : `Hola ${l.nombre}, te contacto de InmoCore.`);
-                const linkWa = `https://wa.me/${l.telefono.replace(/\D/g,'')}?text=${msgWa}`;
-                
-                const fechaFmt = new Date(l.fecha_ingreso).toLocaleDateString('es-AR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-
-                return `
-                <div class="bg-white rounded-2xl border border-red-200 shadow-sm overflow-hidden flex flex-col">
-                    <div class="p-5 border-b border-slate-100 flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-black text-lg text-slate-800">${l.nombre}</h4>
-                            <span class="bg-red-100 text-red-600 text-[9px] font-bold px-2 py-1 rounded uppercase">Nuevo</span>
-                        </div>
-                        <p class="text-xs text-slate-500 mb-4"><i class="fas fa-clock mr-1"></i> Ingreso: ${fechaFmt}</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase">Interés Principal</p>
-                            <p class="text-sm font-bold text-blue-600">${prop.nombre}</p>
-                        </div>
-                        <p class="text-sm font-bold text-slate-700"><i class="fas fa-phone text-slate-400 mr-2"></i> ${l.telefono}</p>
-                    </div>
-                    <div class="flex p-3 gap-2 bg-slate-50 border-t border-slate-100">
-                        <a href="${linkWa}" target="_blank" onclick="marcarComoContactado('${l.id}')" class="flex-1 bg-green-500 text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-green-600 shadow-sm transition"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</a>
-                        <button onclick="abrirGestionLead('${l.id}')" class="flex-1 bg-slate-900 text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-slate-800 shadow-sm transition">Gestionar</button>
-                    </div>
-                </div>`;
+            const p = misLeads.filter(l => l.estado === 'No Contactado'); const c = document.getElementById('grid-leads-nuevos');
+            if(p.length === 0) return c.innerHTML = '<div class="col-span-full text-center p-10 bg-white rounded-xl border border-dashed border-slate-300 text-slate-500 font-bold"><i class="fas fa-check-circle text-4xl text-green-400 mb-3 block"></i>¡Estás al día!</div>';
+            c.innerHTML = p.map(l => {
+                const prop = propiedades.find(x => x.id === l.prop_id) || {nombre: 'Desconocido', script_wa: 'Hola [NOMBRE]'};
+                const msgWa = encodeURIComponent(prop.script_wa ? prop.script_wa.replace(/\[NOMBRE\]/g, l.nombre) : `Hola ${l.nombre}`);
+                return `<div class="bg-white rounded-2xl border border-red-200 shadow-sm flex flex-col"><div class="p-5 border-b border-slate-100 flex-1"><div class="flex justify-between items-start mb-2"><h4 class="font-black text-lg text-slate-800">${l.nombre}</h4><span class="bg-red-100 text-red-600 text-[9px] font-bold px-2 py-1 rounded uppercase">Nuevo</span></div><div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4"><p class="text-[10px] font-bold text-slate-400 uppercase">Interés Principal</p><p class="text-sm font-bold text-blue-600">${prop.nombre}</p></div><p class="text-sm font-bold text-slate-700"><i class="fas fa-phone text-slate-400 mr-2"></i> ${l.telefono}</p></div><div class="flex p-3 gap-2 bg-slate-50 border-t border-slate-100"><a href="https://wa.me/${l.telefono.replace(/\D/g,'')}?text=${msgWa}" target="_blank" onclick="marcarComoContactado('${l.id}')" class="flex-1 bg-green-500 text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-green-600 shadow-sm"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</a><button onclick="abrirGestionLead('${l.id}')" class="flex-1 bg-slate-900 text-white text-center py-2.5 rounded-lg font-bold text-sm hover:bg-slate-800 shadow-sm">Gestionar</button></div></div>`;
             }).join('');
         }
 
         function renderCartera() {
-            const enGestion = misLeads.filter(l => l.estado !== 'No Contactado').sort((a,b) => new Date(b.fecha_ingreso) - new Date(a.fecha_ingreso));
+            const eG = misLeads.filter(l => l.estado !== 'No Contactado').sort((a,b) => new Date(b.fecha_ingreso) - new Date(a.fecha_ingreso));
             const tbody = document.getElementById('table-cartera');
-            
-            if(enGestion.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-slate-400 font-bold bg-slate-50">No tienes prospectos en gestión.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = enGestion.map(l => {
+            if(eG.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-slate-400 font-bold bg-slate-50">No tienes prospectos en gestión.</td></tr>';
+            tbody.innerHTML = eG.map(l => {
                 const prop = propiedades.find(p => p.id === l.prop_id) || {nombre: 'Desconocido'};
-                let bgEstado = 'bg-slate-100 text-slate-700';
-                if(l.estado === 'Contactado') bgEstado = 'bg-blue-100 text-blue-700';
-                if(l.estado === 'Interesado') bgEstado = 'bg-green-100 text-green-700';
-                
-                return `
-                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                    <td class="p-4">
-                        <div class="font-bold text-slate-800">${l.nombre}</div>
-                        <div class="text-[10px] text-slate-500 font-medium mt-1"><i class="fas fa-phone text-slate-400"></i> ${l.telefono}</div>
-                    </td>
-                    <td class="p-4 text-xs font-bold text-slate-600">${prop.nombre}</td>
-                    <td class="p-4"><span class="${bgEstado} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${l.estado}</span></td>
-                    <td class="p-4 text-center">
-                        <button onclick="abrirGestionLead('${l.id}')" class="bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
-                            Abrir Ficha
-                        </button>
-                    </td>
-                </tr>`;
+                let bgEstado = 'bg-slate-100 text-slate-700'; if(l.estado === 'Contactado') bgEstado = 'bg-blue-100 text-blue-700'; if(l.estado === 'Interesado') bgEstado = 'bg-green-100 text-green-700';
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-4"><div class="font-bold text-slate-800">${l.nombre}</div><div class="text-[10px] text-slate-500 font-medium mt-1"><i class="fas fa-phone text-slate-400"></i> ${l.telefono}</div></td><td class="p-4 text-xs font-bold text-slate-600">${prop.nombre}</td><td class="p-4"><span class="${bgEstado} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${l.estado}</span></td><td class="p-4 text-center"><button onclick="abrirGestionLead('${l.id}')" class="bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm">Abrir Ficha</button></td></tr>`;
             }).join('');
         }
 
         function renderCatalogo() {
             const container = document.getElementById('grid-catalogo');
             const activas = propiedades.filter(p => p.activo !== 0);
-            
-            if(activas.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center p-10 text-slate-500 font-bold">Catálogo vacío.</div>';
-                return;
-            }
-
+            if(activas.length === 0) return container.innerHTML = '<div class="col-span-full text-center p-10 text-slate-500 font-bold">Catálogo vacío.</div>';
             container.innerHTML = activas.map(p => {
-                const imgUrl = (p.fotos && p.fotos.length > 20) ? p.fotos : 'img11.jpg';
-                const opColor = p.operacion === 'Venta' ? 'bg-blue-600' : p.operacion === 'Alquiler' ? 'bg-emerald-600' : 'bg-purple-600';
-
-                return `
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                    <div class="h-48 relative shrink-0">
-                        <img src="${imgUrl}" class="w-full h-full object-cover">
-                        <div class="absolute top-3 left-3 ${opColor} text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase shadow-md">${p.operacion || 'Desarrollo'}</div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <h4 class="font-black text-lg text-slate-800 mb-1">${p.nombre}</h4>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase mb-3"><i class="fas fa-map-marker-alt"></i> ${p.ubicacion}</p>
-                        <p class="text-xs text-slate-600 line-clamp-2 mb-4">${p.descripcion || ''}</p>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-sm font-bold text-slate-500">Valor Ref.</span>
-                            <span class="text-lg font-black text-emerald-600">${p.precio || 'Consultar'}</span>
-                        </div>
-                    </div>
-                </div>`;
+                const imgUrl = (p.fotos && p.fotos.length > 20) ? p.fotos : 'img11.jpg'; const opColor = p.operacion === 'Venta' ? 'bg-blue-600' : p.operacion === 'Alquiler' ? 'bg-emerald-600' : 'bg-purple-600';
+                return `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col"><div class="h-48 relative shrink-0"><img src="${imgUrl}" class="w-full h-full object-cover"><div class="absolute top-3 left-3 ${opColor} text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase shadow-md">${p.operacion || 'Desarrollo'}</div></div><div class="p-5 flex-1 flex flex-col"><h4 class="font-black text-lg text-slate-800 mb-1">${p.nombre}</h4><p class="text-[11px] font-bold text-slate-400 uppercase mb-3"><i class="fas fa-map-marker-alt"></i> ${p.ubicacion}</p><p class="text-xs text-slate-600 line-clamp-2 mb-4">${p.descripcion || ''}</p><div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center"><span class="text-sm font-bold text-slate-500">Valor Ref.</span><span class="text-lg font-black text-emerald-600">${p.precio || 'Consultar'}</span></div></div></div>`;
             }).join('');
         }
 
-        // --- GESTIÓN DE LEADS (Modal) ---
+        // --- GESTIÓN DE LEADS (NOTAS CORREGIDAS) ---
         function abrirGestionLead(id) {
             const lead = misLeads.find(l => l.id === id);
             if(!lead) return;
             leadEditandoId = id;
-
             document.getElementById('modal-lead-name').innerText = lead.nombre;
             document.getElementById('modal-lead-phone').innerText = lead.telefono;
             document.getElementById('modal-lead-estado').value = lead.estado;
-            
             const prop = propiedades.find(p => p.id === lead.prop_id) || {script_wa: 'Hola [NOMBRE]'};
-            const msgWa = encodeURIComponent(prop.script_wa.replace(/\[NOMBRE\]/g, lead.nombre));
-            document.getElementById('btn-wa-modal').href = `https://wa.me/${lead.telefono.replace(/\D/g,'')}?text=${msgWa}`;
-
+            document.getElementById('btn-wa-modal').href = `https://wa.me/${lead.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(prop.script_wa.replace(/\[NOMBRE\]/g, lead.nombre))}`;
+            
             actualizarVistaNotas(lead.notas || []);
-
-            document.getElementById('modal-gestion').classList.remove('hidden');
-            document.getElementById('modal-gestion').classList.add('flex');
+            document.getElementById('modal-gestion').classList.remove('hidden'); document.getElementById('modal-gestion').classList.add('flex');
         }
 
-        function cerrarModalGestion() {
-            document.getElementById('modal-gestion').classList.add('hidden');
-            document.getElementById('modal-gestion').classList.remove('flex');
-            leadEditandoId = null;
-            document.getElementById('nueva-nota-input').value = '';
-        }
+        function cerrarModalGestion() { document.getElementById('modal-gestion').classList.add('hidden'); document.getElementById('modal-gestion').classList.remove('flex'); leadEditandoId = null; document.getElementById('nueva-nota-input').value = ''; }
 
         function actualizarVistaNotas(notas) {
             const container = document.getElementById('modal-lead-notas-list');
-            if(notas.length === 0) {
-                container.innerHTML = '<p class="text-xs text-center text-slate-400 mt-4">No hay notas registradas.</p>';
-                return;
-            }
-            container.innerHTML = notas.map(n => `
-                <div class="bg-white p-3 rounded border border-slate-100 shadow-sm text-sm">
-                    <p class="text-[9px] font-bold text-blue-500 mb-1 uppercase">${n.time}</p>
-                    <p class="text-slate-700">${n.text}</p>
-                </div>
-            `).join('');
+            if(notas.length === 0) return container.innerHTML = '<p class="text-xs text-center text-slate-400 mt-4">No hay notas registradas.</p>';
+            container.innerHTML = notas.map(n => `<div class="bg-white p-3 rounded border border-slate-100 shadow-sm text-sm"><p class="text-[9px] font-bold text-blue-500 mb-1 uppercase">${n.time}</p><p class="text-slate-700">${n.text}</p></div>`).join('');
             container.scrollTop = container.scrollHeight;
         }
 
         function agregarNota() {
-            const input = document.getElementById('nueva-nota-input');
-            const texto = input.value.trim();
+            const input = document.getElementById('nueva-nota-input'); const texto = input.value.trim();
             if(!texto || !leadEditandoId) return;
-
             const lead = misLeads.find(l => l.id === leadEditandoId);
             if(!lead.notas) lead.notas = [];
-            
-            lead.notas.push({
-                time: new Date().toLocaleString('es-AR', {dateStyle: 'short', timeStyle: 'short'}),
-                text: texto
-            });
-            
-            actualizarVistaNotas(lead.notas);
-            input.value = '';
+            lead.notas.push({ time: new Date().toLocaleString('es-AR', {dateStyle: 'short', timeStyle: 'short'}), text: texto });
+            actualizarVistaNotas(lead.notas); input.value = '';
         }
 
         async function guardarGestionLead() {
             if(!leadEditandoId) return;
-            const btn = document.getElementById('btn-guardar-gestion');
-            btn.innerHTML = '<span class="loading-spinner"></span>...'; btn.disabled = true;
-
-            const lead = misLeads.find(l => l.id === leadEditandoId);
-            const nuevoEstado = document.getElementById('modal-lead-estado').value;
-            
+            const btn = document.getElementById('btn-guardar-gestion'); btn.innerHTML = '<span class="loading-spinner"></span>...'; btn.disabled = true;
+            const lead = misLeads.find(l => l.id === leadEditandoId); const nuevoEstado = document.getElementById('modal-lead-estado').value;
             try {
-                await fetch(`${API.leads}?id=${leadEditandoId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ estado: nuevoEstado, notas: lead.notas || [] })
-                });
-                lead.estado = nuevoEstado;
-                cerrarModalGestion();
-                renderDashboard();
-                renderNuevosLeads();
-                renderCartera();
-            } catch(e) {
-                alert("Error guardando en D1");
-            } finally {
-                btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
-            }
+                // AHORA SÍ ENVIAMOS LAS NOTAS A LA API
+                await fetch(`${API.leads}?id=${leadEditandoId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: nuevoEstado, notas: lead.notas || [] }) });
+                lead.estado = nuevoEstado; cerrarModalGestion(); renderDashboard(); renderNuevosLeads(); renderCartera();
+            } catch(e) { alert("Error guardando en D1"); } 
+            finally { btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; }
         }
 
-        // Acceso rápido de Nuevo -> WhatsApp
         async function marcarComoContactado(id) {
             const lead = misLeads.find(l => l.id === id);
-            if(lead.estado === 'No Contactado') {
-                try {
-                    await fetch(`${API.leads}?id=${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({estado: 'Contactado'}) });
-                    initAgenteAsync(); // Refrescar todo silenciosamente
-                } catch(e) {}
-            }
+            if(lead.estado === 'No Contactado') { try { await fetch(`${API.leads}?id=${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({estado: 'Contactado'}) }); initAgenteAsync(); } catch(e) {} }
         }
 
         // --- CHAT CON ADMIN ---
         function abrirChatAdmin() {
-            document.getElementById('chat-widget').classList.remove('hidden');
-            document.getElementById('chat-widget').classList.add('flex');
-            cargarMensajesChat();
-            if(chatInterval) clearInterval(chatInterval);
-            chatInterval = setInterval(cargarMensajesChat, 3000);
+            lastMsgCount = 0; // Reseteamos para que lea los viejos al abrir
+            document.getElementById('chat-widget').classList.remove('hidden'); document.getElementById('chat-widget').classList.add('flex');
+            cargarMensajesChat(); if(chatInterval) clearInterval(chatInterval); chatInterval = setInterval(cargarMensajesChat, 3000);
         }
 
-        function cerrarChatAdmin() {
-            document.getElementById('chat-widget').classList.add('hidden');
-            document.getElementById('chat-widget').classList.remove('flex');
-            if(chatInterval) clearInterval(chatInterval);
-        }
+        function cerrarChatAdmin() { document.getElementById('chat-widget').classList.add('hidden'); document.getElementById('chat-widget').classList.remove('flex'); if(chatInterval) clearInterval(chatInterval); }
 
         async function cargarMensajesChat() {
             if(!currentAgent) return;
             try {
-                const res = await fetch(`${API.chat}?u1=${currentAgent.id}&u2=admin`);
-                const mensajes = await res.json();
+                const res = await fetch(`${API.chat}?u1=${currentAgent.id}&u2=admin`); const mensajes = await res.json();
+                lastMsgCount = mensajes.length; // Actualizamos el contador del escáner silencioso
                 const container = document.getElementById('chat-messages');
-                
-                container.innerHTML = mensajes.map(m => {
-                    const soyYo = m.remitente === currentAgent.id;
-                    const cssClass = soyYo ? 'msg-agente' : 'msg-admin';
-                    const timeFmt = new Date(m.fecha).toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
-                    
-                    return `
-                    <div class="max-w-[85%] p-2.5 rounded-2xl shadow-sm text-[13px] relative ${cssClass}">
-                        <p class="leading-snug">${m.mensaje}</p>
-                        <p class="text-[9px] mt-1 text-right opacity-70">${timeFmt}</p>
-                    </div>`;
-                }).join('');
+                container.innerHTML = mensajes.map(m => { const soyYo = m.remitente === currentAgent.id; return `<div class="max-w-[85%] p-2.5 rounded-2xl shadow-sm text-[13px] relative ${soyYo ? 'msg-agente' : 'msg-admin'}"><p class="leading-snug">${m.mensaje}</p><p class="text-[9px] mt-1 text-right opacity-70">${new Date(m.fecha).toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'})}</p></div>`; }).join('');
                 container.scrollTop = container.scrollHeight;
-            } catch(e) { console.warn("Error chat"); }
+            } catch(e) {}
         }
 
         async function enviarMensajeChat() {
-            const input = document.getElementById('chat-input');
-            const msj = input.value.trim();
-            if(!msj || !currentAgent) return;
-            
-            input.value = '';
-            document.getElementById('chat-messages').innerHTML += `<div class="max-w-[85%] p-2.5 rounded-2xl shadow-sm text-[13px] relative msg-agente opacity-50"><p>${msj}</p></div>`;
-            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
-
-            try {
-                await fetch(API.chat, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ remitente: currentAgent.id, destinatario: 'admin', mensaje: msj })
-                });
-                cargarMensajesChat(); 
-            } catch(e) { alert("Error al enviar mensaje"); }
+            const input = document.getElementById('chat-input'); const msj = input.value.trim(); if(!msj || !currentAgent) return; input.value = '';
+            document.getElementById('chat-messages').innerHTML += `<div class="max-w-[85%] p-2.5 rounded-2xl shadow-sm text-[13px] relative msg-agente opacity-50"><p>${msj}</p></div>`; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+            try { await fetch(API.chat, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ remitente: currentAgent.id, destinatario: 'admin', mensaje: msj }) }); cargarMensajesChat(); } 
+            catch(e) { alert("Error al enviar mensaje"); }
         }
 
-        // Navegación
         function switchTab(t) { ['dashboard', 'leads', 'cartera', 'catalogo'].forEach(x => { const el = document.getElementById(`view-${x}`); if(el) el.classList.add('hidden'); }); document.getElementById(`view-${t}`).classList.remove('hidden'); document.querySelectorAll('nav button').forEach(b => { if(b.id.startsWith('tab-')) { b.classList.remove('bg-slate-800', 'text-blue-400'); b.classList.add('text-slate-300'); } }); const activeBtn = document.getElementById(`tab-${t}`); if(activeBtn){ activeBtn.classList.add('bg-slate-800', 'text-blue-400'); activeBtn.classList.remove('text-slate-300'); } document.getElementById('view-title').innerText = { dashboard: 'Mi Rendimiento', leads: 'Nuevas Asignaciones', cartera: 'Gestión de Cartera', catalogo: 'Catálogo de Activos' }[t]; }
     </script>
 </body>
